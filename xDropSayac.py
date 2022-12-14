@@ -143,8 +143,9 @@ lBILGIYAZI3 = QtBind.createLabel(gui,'depolara girmeniz gerekmektedir.',525,270)
 lBILGIYAZI3 = QtBind.createLabel(gui,'Sadece Stoneler için geçerlidir.',500,210)
 
 def btnPet_clicked():
-	countIn = 'pet'
+	countIn = 'Pet'
 	countItems(countIn)
+
 def btnStorage_clicked():
 	countIn = 'Storage'
 	countItems(countIn)
@@ -156,7 +157,6 @@ def btnGuildStorage_clicked():
 def btnInventory_clicked():
 	countIn = 'Inventory'
 	countItems(countIn)
-
 
 def countItems(countIn):
 	STRScroll = 0
@@ -220,8 +220,8 @@ def countItems(countIn):
 		items = get_guild_storage()['items']
 	elif countIn == 'Inventory':
 		items = get_inventory()['items']
-	elif countIn == 'pet':
-		items = get_pets()
+	elif countIn == 'Pet':
+		items = get_pets()['items']
 		for key in items:
 			if items[key]['type'] == 'pick':
 				items = items[key]['items']
@@ -289,6 +289,7 @@ def countItems(countIn):
 					steady += item['quantity']
 				elif "luck" in item['name']:
 					luck += item['quantity']
+                    
 			if item != None and "Strength" in item['name'] and "Scroll" in item['name']:
 				STRScroll += item['quantity']
 			if item != None and "Intelligence" in item['name'] and "Scroll" in item['name']:
@@ -335,6 +336,7 @@ def countItems(countIn):
 				pandora += item['quantity']
 			if item != None and "Monster Summon Scroll)" in item['name'] and "Monster Summon Scroll" in item['name']:
 				monster += item['quantity']
+                
 	QtBind.setText(gui, qSTRScroll, str(STRScroll))
 	QtBind.setText(gui, qINTScroll, str(INTScroll))
 	QtBind.setText(gui, qHPScroll, str(HPScroll))
@@ -389,5 +391,4 @@ def countItems(countIn):
 	QtBind.setText(gui, qpandora, str(pandora))
 	QtBind.setText(gui, qmonster, str(monster))
 
-
-log('Plugin: xDropSayac Çalışıyor...')
+log('Plugin: xDropSayac Yüklendi! Çalışıyor...')

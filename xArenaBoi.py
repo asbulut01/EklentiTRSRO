@@ -9,8 +9,7 @@ import random
 from operator import add, sub
 
 name = 'xArenaBoi'
-version = 1.6
-NewestVersion = 0
+
 path = get_config_dir() + name + "\\"
 
 Started = False
@@ -38,49 +37,48 @@ MorphID = 0
 
 gui = QtBind.init(__name__, name)
 
-metaby = QtBind.createLabel(gui,'edited by hakankahya',590,298)
+metaby = QtBind.createLabel(gui,'edited by hakankahya',550,210)
 
 lbl = QtBind.createLabel(gui,'Saldırı Menzili ',400,20)
 txtRadius = QtBind.createLineEdit(gui,"40",470,15,25,20)
   
-lbl = QtBind.createLabel(gui,'Başlamadan önce           kişi içeri girmeli.',400,40)
-lbl = QtBind.createLabel(gui,'*Kendini sayma',600,50)
-txtPartyMembers = QtBind.createLineEdit(gui,"1",485,36,25,20)
+lbl = QtBind.createLabel(gui,'Başlamadan önce           kişi içeri girmeli.  *Kendini sayma !!',400,50)
+txtPartyMembers = QtBind.createLineEdit(gui,"1",485,45,25,20)
 
-cbxChange = QtBind.createCheckBox(gui, 'cbxChange_clicked','Solo tamamlandığında parti moduna geç', 400, 70)
-lbl = QtBind.createLabel(gui,'Party mode profile ',430,90)
+cbxChange = QtBind.createCheckBox(gui, 'cbxChange_clicked','Tekli tamamlanınca parti moduna geç! ↓', 400, 70)
+lbl = QtBind.createLabel(gui,'Parti Modu Profili ',430,90)
 txtPartyProfile = QtBind.createLineEdit(gui,"",520,88,90,20)
 
-cbxFinished = QtBind.createCheckBox(gui, 'cbxFinished_clicked','Parti Modu tamamlanınca Profil değiştir.', 400, 110)
-lbl = QtBind.createLabel(gui,'Training profile ',430,130)
+cbxFinished = QtBind.createCheckBox(gui, 'cbxFinished_clicked','Partili tamamlanınca Profili değiştir! ↓', 400, 110)
+lbl = QtBind.createLabel(gui,'Kasılma Profili ',430,130)
 txtFinishedProfile = QtBind.createLineEdit(gui,"",520,128,90,20)
-cbxTerminate = QtBind.createCheckBox(gui, 'cbxTerminate_clicked','Bittiğinde Botu sonlandır', 400, 150)
-cbxUseHighSkills = QtBind.createCheckBox(gui, 'cbxUseHighSkills','Her Zaman En Yüksek Becerileri Kullanın', 400, 180)
+cbxTerminate = QtBind.createCheckBox(gui, 'cbxTerminate_clicked','Tamamlanınca Botu Sonlandır!', 400, 150)
+cbxUseHighSkills = QtBind.createCheckBox(gui, 'cbxUseHighSkills','Her Zaman En Yüksek Becerileri Kullanır.', 400, 180)
 
-lbl = QtBind.createLabel(gui,'Mevcut Aşama: ',10,250)
-lblStage = QtBind.createLabel(gui,'0',85,250)
+lbl = QtBind.createLabel(gui,'→   Aşama : ',100,225)
+lblStage = QtBind.createLabel(gui,'0',175,225)
 
-cbxSolo71to80 = QtBind.createCheckBox(gui, 'cbxSolo71to80_clicked','Tekbaşına (71-80)', 10, 20)
+cbxSolo71to80 = QtBind.createCheckBox(gui, 'cbxSolo71to80_clicked','Tekli (71-80)', 10, 20)
 cbxPT71to80 = QtBind.createCheckBox(gui, 'cbxPT71to80_clicked','Partili (71-80)', 10, 40)
 cbxYeoha = QtBind.createCheckBox(gui, 'cbxYeoha_clicked','Yeoha (A)', 140, 30)
 cbxSeiren = QtBind.createCheckBox(gui, 'cbxSeiren_clicked','Seiren (B)', 250, 30)
 
-cbxSolo81to90 = QtBind.createCheckBox(gui, 'cbxSolo81to90_clicked','Tekbaşına (81-90)', 10, 70)
+cbxSolo81to90 = QtBind.createCheckBox(gui, 'cbxSolo81to90_clicked','Tekli (81-90)', 10, 70)
 cbxPT81to90 = QtBind.createCheckBox(gui, 'cbxPT81to90_clicked','Partili (81-90)', 10, 90)
 cbxNiyaShaman = QtBind.createCheckBox(gui, 'cbxNiyaShaman_clicked','Niya Shaman (A)', 140, 80)
 cbxSlaveWatcher = QtBind.createCheckBox(gui, 'cbxSlaveWatcher_clicked','Slave Watcher (B)', 250, 80)
 
-cbxSolo91to100 = QtBind.createCheckBox(gui, 'cbxSolo91to100_clicked','Tekbaşına (91-100)', 10, 120)
+cbxSolo91to100 = QtBind.createCheckBox(gui, 'cbxSolo91to100_clicked','Tekli (91-100)', 10, 120)
 cbxPT91to100 = QtBind.createCheckBox(gui, 'cbxPT91to100_clicked','Partili (91-100)', 10, 140)
 cbxDemonShaitan = QtBind.createCheckBox(gui, 'cbxDemonShaitan_clicked','Demon Shaitan (A)', 140, 130)
 cbxImhotep = QtBind.createCheckBox(gui, 'cbxImhotep_clicked','Imhotep (B)', 250, 130)
 
-cbxSolo101to110 = QtBind.createCheckBox(gui, 'cbxSolo101to110_clicked','Tekbaşına (101-110)', 10, 170)
+cbxSolo101to110 = QtBind.createCheckBox(gui, 'cbxSolo101to110_clicked','Tekli (101-110)', 10, 170)
 cbxPT101to110 = QtBind.createCheckBox(gui, 'cbxPT101to110_clicked','Partili (101-110)', 10, 190)
 cbxNephthys = QtBind.createCheckBox(gui, 'cbxNephthys_clicked','Nephthys (A)', 140, 180)
 cbxTombSnakeLady = QtBind.createCheckBox(gui, 'cbxTombSnakeLady_clicked','Tomb Snake Lady (B)', 250, 180)
 
-buttonStartStop = QtBind.createButton(gui, 'button_start', '  Başlat  ', 25, 220)
+buttonStartStop = QtBind.createButton(gui, 'button_start', '  Başlat  ', 20, 220)
 
 RegCheckBoxes = [cbxSolo71to80,cbxPT71to80,cbxSolo81to90,cbxPT81to90,cbxSolo91to100,cbxPT91to100,cbxSolo101to110,cbxPT101to110]
 MorphCheckBoxes = [cbxYeoha,cbxSeiren,cbxNiyaShaman,cbxSlaveWatcher,cbxDemonShaitan,cbxImhotep,cbxNephthys,cbxTombSnakeLady]
@@ -198,14 +196,12 @@ def ClearGUI(type,DontClear,DontClear2=None):
 def button_start():
 	global Started, Registering, Attacking, WaitingforParty, Picking, Inside
 	stop_bot()
-	if NewestVersion > int(str(version).replace(".","")):
-		log('Plugin: There is an update avaliable for [%s]!' % name)
 	if Started == False:
 		if OptionsSelected():
 			if Online():
 				SaveConfig()
 			Started = True
-			QtBind.setText(gui,buttonStartStop,'  Stop  ')
+			QtBind.setText(gui,buttonStartStop,'  Durdur  ')
 			if WheresWaldo():
 				log('Plugin: Eklentiyi Dışarıda başlatın!')
 			else:
@@ -219,7 +215,6 @@ def button_start():
 		Picking = False
 		Inside = False
 		QtBind.setText(gui,buttonStartStop,'  Başlat  ')
-
 
 def Register():
 	if OptionsSelected():
@@ -425,7 +420,7 @@ def MovetoRandomPoint():
 	operator = random.choice(ops)
 	Y = operator(get_character_data()['y'], number)
 	move_to(X, Y, 0.0)
-	log('Plugin: Sıkışmış olabilir, Konuma geri döndürülüyor.')
+	log('Plugin: Takılmış olabilir, Geri dönülüyor...')
 	MoveAttempts = 0
 
 
@@ -454,7 +449,7 @@ def ConfirmAreaChanged():
 		ChangeAreaAttempts = 0
 		return True
 	elif ChangeAreaAttempts < 5:
-		log('Plugin: Kasılma Alanında hareket edilemiyor.. Tekrar Deniyor..')
+		log('Plugin: Alanda Hareket Edilemiyor. Tekrar deneniyor.')
 		ChangeAreaAttempts += 1
 		MovetoPick()
 		return
@@ -495,7 +490,7 @@ def CheckforParty():
 				if player['player_id'] > 0:
 					MembersInside += 1
 					if MembersInside >= WaitFor:
-						log('Plugin: Tüm parti üyeleri iceri girdi.. Savas baslatılıyor. !')
+						log('Plugin: Tüm parti üyeleri iceri girdi. Savaş başlatılıyor. !')
 						WaitingforParty = False
 						Timer(5.0, BeginBattle, ()).start()
 						return
@@ -505,7 +500,7 @@ def CheckforParty():
 def OptionsSelected():
 	if QtBind.isChecked(gui,cbxSolo71to80) or QtBind.isChecked(gui,cbxSolo81to90) or QtBind.isChecked(gui,cbxSolo91to100) or QtBind.isChecked(gui,cbxSolo101to110) or QtBind.isChecked(gui,cbxPT71to80) or QtBind.isChecked(gui,cbxPT81to90) or QtBind.isChecked(gui,cbxPT91to100) or QtBind.isChecked(gui,cbxPT101to110):
 		return True
-	log('Plugin: Lütfen gerekli tüm seçenekleri seçin')
+	log('Plugin: Lütfen gerekli tüm seçenekleri seçin!')
 	return False
 
 # script command BOI,type,morph
@@ -552,7 +547,7 @@ def BOI(args):
 			QtBind.setChecked(gui,cbxNephthys,True)
 		if morph == 'B':
 			QtBind.setChecked(gui,cbxTombSnakeLady,True)
-	log('Plugin: Sonsuzluk Savaşı ayarlarını ayarlama')
+	log('Plugin: Sonsuzluk Savaşı Ayarları Ayarlandı.')
 	Timer(1.0, button_start, ()).start()
 	return 0
 
@@ -635,7 +630,7 @@ def teleported():
 				SoloCount = 0
 			Registering = False
 			Inside = True
-			log('Plugin: Savaşa Başarıyla Girildi.')
+			log('Plugin: Sonsuzluk Savaşı Başladı.')
 			if not get_party():
 				Timer(5.0, BeginBattle, ()).start()
 			else:
@@ -688,7 +683,7 @@ def event_loop():
 				if partycount >= WaitFor:
 					Register()
 				else:
-					log('Plugin: Kayıt olmadan önce Parti Üyeleri bekleniyor.')
+					log('Plugin: Başlamadan önce Parti Üyeleri bekleniyor.')
 			else:
 				Register()
 
@@ -701,7 +696,7 @@ def handle_joymax(opcode, data):
 			if response == 60:
 				log('Plugin: Zindana henüz giremezsin!')	
 			elif response == 42:
-				log('Plugin: Sen Partide değilsin!')
+				log('Plugin: Partide değilsin!')
 			elif response == 44:
 				log('Plugin: Girmek için gerekli seviye değilsin!')
 			elif response == 39:
@@ -727,7 +722,7 @@ def handle_joymax(opcode, data):
 				if QtBind.isChecked(gui,cbxSolo71to80) or QtBind.isChecked(gui,cbxSolo81to90) or QtBind.isChecked(gui,cbxSolo91to100) or QtBind.isChecked(gui,cbxSolo101to110):
 					#leave party
 					inject_joymax(0x7061,b'',False)
-					log('Plugin: Partiden Ayrıldı')
+					log('Plugin: Partiden Ayrıldı.')
 
 
 	#Skill added...maybe not perfect
@@ -746,7 +741,7 @@ def handle_joymax(opcode, data):
 		packetIndex = 1
 		SkillID  = struct.unpack_from("<I",data,packetIndex)[0]
 		if SkillID == MorphID:
-			log('Plugin: Morph kaybetti.. Tekrar Dönüşüyor')
+			log('Plugin: Maske sonlandı, Tekrar Dönüşüyor!')
 			Attacking = False
 			Timer(1.0, move_to, [14709.0, 2592.0, 0.0]).start()
 			Timer(3.0, ChangetoMob, ()).start()	

@@ -11,9 +11,6 @@ import json
 import QtBind
 
 name = 'xKomut'
-version = 1.2
-NewestVersion = 0
-
 
 #get phbot folder path
 path = get_config_dir()[:-7]
@@ -32,14 +29,16 @@ Index = 0
 
 gui = QtBind.init(__name__, name)
 LvlSaveName = QtBind.createLabel(gui,'Kayıt Adı ',10,13)
-SaveName = QtBind.createLineEdit(gui,"",80,10,120,20)
-RecordBtn = QtBind.createButton(gui, 'button_start', ' Kaydı Başlat ', 220, 10)
-Display = QtBind.createList(gui,20,50,280,180)
-ShowCommandsBtn = QtBind.createButton(gui, 'button_ShowCmds', ' Akımı Göster \n Saved Cmds ', 20, 240)
-DeleteCommandsBtn = QtBind.createButton(gui, 'button_DelCmds', ' Komut Sil ', 120, 240)
-ShowPacketsBtn = QtBind.createButton(gui, 'button_ShowPackets', ' Paketleri Göster ', 220, 240)
-cbxShowPackets = QtBind.createCheckBox(gui, 'cbxAuto_clicked','Paketleri Göster ', 330, 10)
-metaby = QtBind.createLabel(gui,'edited by hakankahya',590,298)
+SaveName = QtBind.createLineEdit(gui,"",60,10,121,20)
+RecordBtn = QtBind.createButton(gui, 'button_start', ' Kaydı Başlat ', 185, 8)
+Display = QtBind.createList(gui,15,40,245,180)
+ShowCommandsBtn = QtBind.createButton(gui, 'button_ShowCmds', ' Akımı Göster ', 10, 230)
+DeleteCommandsBtn = QtBind.createButton(gui, 'button_DelCmds', ' Komut Sil ', 90, 230)
+ShowPacketsBtn = QtBind.createButton(gui, 'button_ShowPackets', ' Paketleri Göster ', 170, 230)
+cbxShowPackets = QtBind.createCheckBox(gui, 'cbxAuto_clicked','Paket İçeriğini Göster! ', 65, 260)
+QtBind.createLabel(gui,' ↓ Geçerli komutların listesi : ↓',300,10)
+QtBind.createLabel(gui, '- LeaveParty : Partiden Ayrılır.\n- Notification,title,message : Simge durumunda bildirim gönderir.\n- NotifyList,message : Yeni bildirim ekle.\n- PlaySound,ding.wav : Belirtilen Sesi Çalar.\n- SetScript,scriptname.txt : Komut dosyası phbot klasöründe olmalıdır. \n- CloseBot : Botu Kapatır.\n- CloseBot,in,X : Botu x Dakika içinde Kapatır. Örn : CloseBot,in,5\n- CloseBot,at,00:00 : Botu x Saatte Kapatır. Örn : CloseBot,at,00:00\n- StartBot,in,X : Botu Durdurur ve x Dakika Sonra Başlatır. Örn : StartBot,in,5\n- StartBot,at,00:00 : Botu Durdurur ve x saatinde Başlatır. Örn : StartBot,at,00:00\n- GoClientless : Clienti Anında Düşürür.\n- StopStart : 1 Saniyede botu durdurur ve başlatır\n- StartTrace,player : Bir oyuncuyu takibe başlar.\n- RemoveSkill,skillname : Etkinse beceriyi kaldırır.\n- Drop,itemname : Belirtilen Eşyayı Yere Bırakır.\n- OpenphBot,commandlinearguments : Belirtilen bilgilerle yeni bot açar.\n- CustomNPC,savedname : Kayıt ettiğin NPC Komutunu dosyaya ekler.', 265, 30)
+metaby = QtBind.createLabel(gui,'edited by hakankahya',500,260)
 
 #backup
 def ResetSkip():
@@ -49,7 +48,7 @@ def ResetSkip():
 def LeaveParty(args):
 	if get_party():
 		inject_joymax(0x7061,b'',False)
-		log('Plugin: Leaving Party')
+		log('Plugin: Partiden Ayrıldı.')
 	return 0
 
 #Notification,title,message..show a windows notification, bot must be minimized
@@ -59,7 +58,7 @@ def Notification(args):
 		message = args[2]
 		show_notification(title, message)
 		return 0
-	log('Plugin: Incorrect Notification command')
+	log('Plugin: Yanlış Bildirim komutu!')
 	return 0
 
 #NotifyList,message.. Create a notification in the list
@@ -68,7 +67,7 @@ def NotifyList(args):
 		message = args[1]
 		create_notification(message)
 		return 0
-	log('Plugin: Incorrect NotifyList command')
+	log('Plugin: Yanlış Bildirim Listesi komutu!')
 	return 0
 
 #PlaySound,ding.wav...wav file must be in your phbot folder
@@ -76,9 +75,9 @@ def PlaySound(args):
 	FileName = args[1]
 	if os.path.exists(path + FileName):
 		play_wav(path + FileName)
-		log('Plugin: Playing [%s]' %FileName)
+		log('Plugin: Oynatılıyor [%s]' %FileName)
 		return 0
-	log('Plugin: Sound file [%s] doesnt exist' %FileName)
+	log('Plugin: Ses Dosyası yok! [%s]' %FileName)
 	return 0
 
 #example - SetScript,Mobs103.txt
@@ -87,9 +86,9 @@ def SetScript(args):
 	name = args[1]
 	if os.path.exists(path + name):
 		set_training_script(path + name)
-		log('Plugin: Changing Script to [%s]' %name)
+		log('Plugin: Komut Dosyasını şu şekilde değiştirildi → [%s]' %name)
 		return 0
-	log('Plugin: Script [%s] doesnt exist' %name)
+	log('Plugin: Komut [%s] Bulunamadı.' %name)
 	return 0
 
 #CloseBot..kills the bot immediately
@@ -105,14 +104,14 @@ def CloseBot(args):
 	time = args[2]
 	if type == 'in':
 		CloseBotAt = str(datetime.datetime.now() + timedelta(minutes=int(time)))[11:16]
-		log('Plugin: Closing Bot At [%s]' %CloseBotAt)
+		log('Plugin: Bot Kapatılıyor [%s]' %CloseBotAt)
 	elif type == 'at':
 		CloseBotAt = time
-		log('Plugin: Closing Bot At [%s]' %CloseBotAt)
+		log('Plugin: Bot Kapatılıyor [%s]' %CloseBotAt)
 	return 0
 
 def Terminate():
-	log("Plugin: Closing bot...")
+	log("Plugin: Bot Kapatılıyor...")
 	os.kill(os.getpid(),9)
 
 #GoClientless.. Kills the Client instantly
@@ -121,7 +120,7 @@ def GoClientless(args):
 	if pid:
 		os.kill(pid, signal.SIGTERM)
 		return 0
-	log('Plugin: Client is not open!')
+	log('Plugin: Client düşürülüyor.')
 	return 0
 
 
@@ -140,10 +139,10 @@ def StartBot(args):
 	CheckStartTime = True
 	if type == 'in':
 		StartBotAt = str(datetime.datetime.now() + timedelta(minutes=int(time)))[11:16]
-		log('Plugin: Starting Bot At [%s]' %StartBotAt)
+		log('Plugin: Bot Başlatılıyor [%s]' %StartBotAt)
 	elif type == 'at':
 		StartBotAt = time
-		log('Plugin: Starting Bot At [%s]' %StartBotAt)
+		log('Plugin: Bot Başlatılıyor [%s]' %StartBotAt)
 	return 0
 
 #StopStart..Stops and starts the bot 1 second later
@@ -171,16 +170,16 @@ def StartTrace(args):
 		stop_bot()
 		player = args[1]
 		if start_trace(player):
-			log('Plugin: Starting to trace [%s]' %player)
+			log('Plugin: Takip Başladı. [%s]' %player)
 			return 0
 		else:
-			log('Plugin: Player [%s] is not near.. Continuing' %player)
+			log('Plugin: Oyuncu [%s] yakın değil.. Devam' %player)
 			SkipCommand = True
 			Timer(1.0, start_bot, ()).start()
 			#some cases the bot may not pass over the command again when starting again
 			Timer(30.0, ResetSkip, ()).start()
 			return 0
-	log('Plugin: Incorrect StartTrace format')
+	log('Plugin: Yanlış Başlangıç izleme biçimi')
 	return 0
 
 #RemoveSkill,skillname...Remove the skill if active
@@ -195,11 +194,11 @@ def RemoveSkill(args):
 				packet += struct.pack('<I', ID)
 				packet += b'\x00'
 				inject_joymax(0x7074,packet,False)
-				log('Plugin: Removing skill [%s]' %RemSkill)
+				log('Plugin: Beceriyi kaldırma [%s]' %RemSkill)
 				return 0
-		log('Plugin: Skill is not active')
+		log('Plugin: Beceri aktif değil')
 		return 0
-	log('Plugin: Only supported on iSRO or TRSRO, contact me to add support for your server')
+	log('Plugin: Yalnızca ISRO veya TRSROda Çalışır.')
 	return 0
 
 #Drop,itemname... drops the first stack of the specified item
@@ -214,12 +213,12 @@ def Drop(args):
 				if name == DropItem:
 					p = b'\x07' # static stuff maybe
 					p += struct.pack('B', slot)
-					log('Plugin: Dropping item [%s][%s]' %(item['quantity'],name))
+					log('Plugin: Öğeyi bırakma [%s][%s]' %(item['quantity'],name))
 					inject_joymax(0x7034,p,True)
 					return 0
-		log(r'Plugin: You Dont Have any Items to Drop')
+		log(r'Plugin: Bırakacak Eşyaların Yok.')
 		return 0
-	log('Plugin: Only supported on iSRO or TRSRO, contact me to add support for your server')
+	log('Plugin: Yalnızca ISRO veya TRSROda Çalışır.')
 	return 0
 
 #OpenphBot,commandlinearguments..opens a bot with the specified arguements
@@ -227,9 +226,9 @@ def OpenphBot(args):
 	cmdargs = args[1]
 	if os.path.exists(path + "phBot.exe"):
 		subprocess.Popen(path + "phBot.exe " + cmdargs)
-		log('Plugin: Opening a new bot')
+		log('Plugin: Yeni bir bot açılıyor...')
 		return 0
-	log('Plugin: Invalid path to bot')
+	log('Plugin: Bot Yolu geçersiz.')
 	return 0
 
 	
@@ -243,7 +242,7 @@ def event_loop():
 			if CurrentTime == StartBotAt:
 				CheckStartTime = False
 				SkipCommand = True
-				log('Plugin: Starting Bot')
+				log('Plugin: Bot Başlatıldı.')
 				start_bot()
 
 	elif CheckCloseTime:
@@ -260,19 +259,19 @@ def event_loop():
 def button_start():
 	global BtnStart, RecordedPackets
 	if len(QtBind.text(gui,SaveName)) <= 0:
-		log('Plugin: Please Enter a Name for the Custom Scipt Command')
+		log('Plugin: Lütfen Özel Komut Dosyası için bir Ad Girin!')
 		return
 	if BtnStart == False:
 		BtnStart = True
-		QtBind.setText(gui,RecordBtn,' Stop Recording ')
-		log('Plugin: Started, Please Select the NPC to start recording')
+		QtBind.setText(gui,RecordBtn,' Kaydı Durdur ')
+		log('Plugin: Kayıt Başladı, NPC seçimlerini yapın.')
 
 	elif BtnStart == True:	
-		log('Plugin: Recording Finished')
+		log('Plugin: Kayıt Tamamlandı')
 		Name = QtBind.text(gui,SaveName)
 		SaveNPCPackets(Name,RecordedPackets)
 		BtnStart = False
-		QtBind.setText(gui,RecordBtn,' Start Recording ')
+		QtBind.setText(gui,RecordBtn,' Kayıt Başladı ')
 		Recording = False
 		RecordedPackets = []
 		Timer(1.0, button_ShowCmds, ()).start()
@@ -286,7 +285,7 @@ def button_ShowCmds():
 			for name in data:
 				QtBind.append(gui,Display,name)
 	else:
-		log('Plugin: No Commands Currently Saved')
+		log('Plugin: Şu Anda Kaydedilmiş Komut Yok!')
 
 def button_DelCmds():
 	Name = QtBind.text(gui,Display)
@@ -300,11 +299,11 @@ def button_DelCmds():
 					del data[name]
 					with open("CustomNPC.json","w") as f:
 						f.write(json.dumps(data, indent=4))
-						log('Plugin: Custom NPC Command [%s] Deleted' %name)
+						log('Plugin: Özel NPC Komutu Silindi [%s]' %name)
 						Timer(1.0, button_ShowCmds, ()).start()
 						return
 			else:
-				log('Plugin: Custom NPC Command [%s] does not exist' %Name)
+				log('Plugin: Özel NPC Komutu yok [%s]' %Name)
 				Timer(1.0, button_ShowCmds, ()).start()
 
 
@@ -342,7 +341,7 @@ def SaveNPCPackets(Name,Packets=[]):
 	data[Name] = {"Packets": Packets}
 	with open("CustomNPC.json","w") as f:
 		f.write(json.dumps(data, indent=4))
-	log("Plugin: Custom NPC Command Saved")
+	log("Plugin: Özel NPC Komutu Kaydedildi.")
 
 
 def CustomNPC(args):
@@ -375,7 +374,7 @@ def InjectPackets():
 
 	elif Index == NumofPackets:
 		global SkipCommand
-		log('Plugin: Finished Custom NPC Command')
+		log('Plugin: Bitmiş Özel NPC Komutu.')
 		Index = 0
 		ExecutedPackets = []
 		#some cases the bot may not pass over the command when starting again
@@ -404,26 +403,4 @@ def handle_silkroad(opcode, data):
 
 	return True
 
-#-----------------Custom Script Command Stuffs End-----------------
-
-
-def CheckForUpdate():
-	global NewestVersion
-	#avoid request spam
-	if NewestVersion == 0:
-		try:
-			req = urllib.request.Request('https://raw.githubusercontent.com/Bunker141/Phbot-Plugins/master/ScriptCommands.py', headers={'User-Agent': 'Mozilla/5.0'})
-			with urllib.request.urlopen(req) as f:
-				lines = str(f.read().decode("utf-8")).split()
-				for num, line in enumerate(lines):
-					if line == 'version':
-						NewestVersion = int(lines[num+2].replace(".",""))
-						CurrentVersion = int(str(version).replace(".",""))
-						if NewestVersion > CurrentVersion:
-							log('Plugin: There is an update avaliable for [%s]!' % name)
-		except:
-			pass
-
-
-CheckForUpdate()
-log('Plugin: %s Çalışıyor...' % (__name__))
+log('Plugin: %s Yüklendi! Çalışıyor...' % (__name__))

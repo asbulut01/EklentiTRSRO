@@ -21,9 +21,6 @@ lstLeaders = QtBind.createList(gui,525,32,110,70)
 btnAddLeader = QtBind.createButton(gui,'btnAddLeader_clicked',"    Ekle   ",635,9)
 btnRemLeader = QtBind.createButton(gui,'btnRemLeader_clicked',"     Sil     ",635,32)
 metaby = QtBind.createLabel(gui,'edited by hakankahya',575,270)
-
-qm = "'"
-
 QtBind.createLabel(gui,'Tüm parti envanterinizi kontrol etmek için ekli liderden komutlar yazın',12,12)
 QtBind.createLabel(gui, '- ENV : Envanterin boş yuvasını bildirir.\n- GOLD : Şuanki Altını Bildirir.\n- EXP : Şuanki LV , EXP ve SP bildirir.\n- JOBEXP : JOB EXP bildirir.\n- POUCH : Meslek kesesini bildirir.(Uzmanlik)\n- LAMP : Envanterdeki Lambaları bildirir.\n- SOX : Envanter, Pet ve Deponuzdaki sox ögelerini bildirir.(Kuşanmişlar hariç)\n- FLOWER : Envanter ve Deponuzdaki çiçegi bildirir.\n- ICE : Envanterinizdeki dondurma(event)bildirir.\n- PANDORA : Envanter, Pet ve Deponuzdaki Pandora Kutusunu bildirir.\n- MS : Envanter, Pet ve Deponuzdaki MSS Bildirir.\n- LUCK : Envanter, Pet ve Deponuzdaki Lucky Stoneleri bildirir.\n- STEADY : Envanter, Pet ve Deponuzdaki Stedy Stoneleri Bildirir.\n- ELIXIR : Envanter, Pet ve Deponuzdaki toplam Elixir miktarını bildirir.\n- BLUESTONE : Envanter, Pet ve Deponuzdaki toplam Blue Stone miktarını bildirir.\n- BLUESTONE2 : Envanter, Pet ve Deponuzdaki toplam Blue Stone miktarını bildirir.\n- STATSTONE : Envanter, Pet ve Deponuzdaki toplam Stat Stone miktarını bildirir.\n- STATSTONE2 : Envanter, Pet ve Deponuzdaki toplam Stat Stone miktarını bildirir.', 15, 45)
 
@@ -507,11 +504,11 @@ def checkInv(arg):
     if arg == "Flower3":
         handleChatCommand("party Flower; Life " + str(flower3) + " , Energy " + str(flower4) + " , Evil " + str(flower1) + " , Illusion " + str(flower2) + " , Whirling " + str(flower5))
     if arg == "BlueStone":
-        handleChatCommand("party STR " + str(blue1) + " , INT " + str(blue2) + " , MASTER " + str(blue3) + " , STRİKES " + str(blue4) + " , DSCPLNE " + str(blue5) + " , PNTRTON " + str(blue6) + " , DODGING " + str(blue7) + " , STAMINA " + str(blue8))
+        handleChatCommand("party STR " + str(blue1) + " , INT " + str(blue2) + " , MASTER " + str(blue3) + " , STRIKES " + str(blue4) + " , DSCPLNE " + str(blue5) + " , PNTRTON " + str(blue6) + " , DODGING " + str(blue7) + " , STAMINA " + str(blue8))
     if arg == "BlueStone2":
-        handleChatCommand("party MAGİC " + str(blue9) + " , FOGS " + str(blue10) + " , AIR " + str(blue11) + " , FIRE " + str(blue12) + " , IMMUNITY " + str(blue13) + " , REVIVAL " + str(blue14))
+        handleChatCommand("party MAGIC " + str(blue9) + " , FOGS " + str(blue10) + " , AIR " + str(blue11) + " , FIRE " + str(blue12) + " , IMMUNITY " + str(blue13) + " , REVIVAL " + str(blue14))
     if arg == "StatStone":
-        handleChatCommand("party COURAGE " + str(blue1) + " , WARRIORS " + str(blue2) + " , PHİLOSOPHY " + str(blue3) + " , MEDİTATION " + str(blue4) + " , CHALLENGE " + str(blue5) + " , FOCUS " + str(blue6) + " , FLESH " + str(blue7))
+        handleChatCommand("party COURAGE " + str(blue1) + " , WARRIORS " + str(blue2) + " , PHILOSOPHY " + str(blue3) + " , MEDITATION " + str(blue4) + " , CHALLENGE " + str(blue5) + " , FOCUS " + str(blue6) + " , FLESH " + str(blue7))
     if arg == "StatStone2":
         handleChatCommand("party LIFE " + str(blue8) + " , MIND " + str(blue9) + " , SPIRIT " + str(blue10) + " , DODGING " + str(blue11) + " , AGILITY " + str(blue12) + " , TRAINING " + str(blue13) + " , PRAYER " + str(blue14))
     if arg == "Cream":
@@ -527,44 +524,8 @@ def checkInv(arg):
     if arg == "Lamp":
         handleChatCommand("party Genie’s Lamp " + str(lamp) + " -- Dirty Lamp " + str(dLamp))
     if arg == "Sox":
-        handleChatCommand("party " + str(sunItems) + " Parça SoX öğesi")
+        handleChatCommand("party " + str(sunItems) + " Parca SoX Ogesi")
 
-    elif msg == "ENV":
-        inventorySpace()
-    elif msg == "EXP":
-        checkExp()
-    elif msg == "JOBEXP":
-        checkJob()
-    elif msg == "GOLD":
-        checkGold()
-    elif msg == "ELIXIR":
-        checkInv("Elixir")
-    elif msg == "BLUESTONE":
-        checkInv("BlueStone")
-    elif msg == "BLUESTONE2":
-        checkInv("BlueStone2")
-    elif msg == "STATSTONE":
-        checkInv("StatStone")
-    elif msg == "STATSTONE2":
-        checkInv("StatStone2")
-    elif msg == "FLOWER":
-        checkInv("Flower3") 
-    elif msg == "PANDORA":
-        checkInv("Pandora") 
-    elif msg == "LUCK":
-        checkInv("Luck") 
-    elif msg == "STEADY":
-        checkInv("Steady") 
-    elif msg == "MS":
-        checkInv("Ms") 
-    elif msg == "ICE":
-        checkInv("Cream") 
-    elif msg == "ACC":
-        checkInv("Accessory")
-    elif msg == "LAMP":
-        checkInv("Lamp")
-    elif msg == "SOX":
-        checkInv("Sox")
 
 def checkGold():
     gold = 0;
@@ -577,7 +538,7 @@ def checkGold():
 
     goldS = format(gold, ",")
 
-    handleChatCommand("party Altın " + str(goldS))
+    handleChatCommand("party Suan " + str(goldS) + " Altin var. ")
 
 
 def checkExp():
@@ -587,10 +548,10 @@ def checkExp():
     maxExp = data['max_exp']
     exp = float((100 * currentExp) / maxExp)
 
-    handleChatCommand("party Seviye: " + str(level) + " - Tecrübe : %" + str("{:.2f}".format(exp)))
+    handleChatCommand("party Seviye: " + str(level) + " - Tecrube : %" + str("{:.2f}".format(exp)))
 
 
-def ınventorySpace():
+def inventorySpace():
     size = 0
     usingSpace = 0
 
@@ -605,7 +566,7 @@ def ınventorySpace():
 
     size -= 1
     usingSpace -= 1
-    handleChatCommand("party Boş Alan " + str(size - usingSpace) + "  ---->  " + str(usingSpace) + "/" + str(size))
+    handleChatCommand("party Bos Alan " + str(size - usingSpace) + "  ---->  " + str(usingSpace) + "/" + str(size))
 
 def checkJob():
     data = get_character_data()
@@ -675,6 +636,52 @@ def connected():
 # Called when the character enters the game world
 def joined_game():
     loadConfigs()
+    
+# All chat messages received are sent to this function
+def handle_chat(t, player, msg):
+    i = 0;
+    j = 0;
+    k = 0;
+    l = 0;
+    # Check player at leader list or a Discord message
+    if player and lstLeaders_exist(player) or t == 100:
+
+        if msg == "ENV":
+            inventorySpace()
+        elif msg == "EXP":
+            checkExp()
+        elif msg == "JOBEXP":
+            checkJob()
+        elif msg == "GOLD":
+            checkGold()
+        elif msg == "ELIXIR":
+            checkInv("Elixir")
+        elif msg == "BLUESTONE":
+            checkInv("BlueStone")
+        elif msg == "BLUESTONE2":
+            checkInv("BlueStone2")
+        elif msg == "STATSTONE":
+            checkInv("StatStone")
+        elif msg == "STATSTONE2":
+            checkInv("StatStone2")
+        elif msg == "FLOWER":
+            checkInv("Flower3") 
+        elif msg == "PANDORA":
+            checkInv("Pandora") 
+        elif msg == "LUCK":
+            checkInv("Luck") 
+        elif msg == "STEADY":
+            checkInv("Steady") 
+        elif msg == "MS":
+            checkInv("Ms") 
+        elif msg == "ICE":
+            checkInv("Cream") 
+        elif msg == "ACC":
+            checkInv("Accessory")
+        elif msg == "LAMP":
+            checkInv("Lamp")
+        elif msg == "SOX":
+            checkInv("Sox")
 
 # Called every 500ms
 # def event_loop():

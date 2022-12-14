@@ -25,7 +25,7 @@ dimensionalItemActivated = None
 # Graphic user interface
 gui = QtBind.init(__name__,pName)
 
-metaby = QtBind.createLabel(gui,'edited by hakankahya',590,298)
+metaby = QtBind.createLabel(gui,'edited by hakankahya',590,270)
 
 lblMobs = QtBind.createLabel(gui,'#     Yok sayılacak Canavar         #\n#        ↓ İsimlerini ekleyin. ↓        #',31,6)
 tbxMobs = QtBind.createLineEdit(gui,"",31,35,100,20)
@@ -83,8 +83,8 @@ lblGiantParty = QtBind.createLabel(gui,'GiantParty(20)',220,_y)
 cbxIgnoreGiantParty = QtBind.createCheckBox(gui,'cbxIgnoreGiantParty_clicked','Yoksay',315,_y)
 cbxOnlyCountGiantParty = QtBind.createCheckBox(gui,'cbxOnlyCountGiantParty_clicked','Tercih Et',405,_y)
 
-_y+=30
-cbxAcceptForgottenWorld = QtBind.createCheckBox(gui,'cbxAcceptForgottenWorld_checked','Unutulmuş Dünya davetlerini kabul et',220,_y)
+_y+=50
+cbxAcceptForgottenWorld = QtBind.createCheckBox(gui,'cbxAcceptForgottenWorld_checked','Unutulmuş Dünya davetlerini kabul et.',250,_y)
 
 # ______________________________ Methods ______________________________ #
 
@@ -334,11 +334,11 @@ def AttackMobs(wait,isAttacking,position,radius):
 		# Start to kill mobs using bot
 		if not isAttacking:
 			start_bot()
-			log("Plugin: Starting to kill ("+str(count)+") mobs at this area. Radius: "+(str(radius) if radius != None else "Max."))
+			log("Plugin: Bu bölgedeki canavarları öldürmeye başlıyor ("+ str (count) +"). Menzil : "+(str(radius) if radius != None else "Max."))
 		# Check if there is not mobs to continue script
 		Timer(wait,AttackMobs,[wait,True,position,radius]).start()
 	else:
-		log("Plugin: All mobs killed!")
+		log("Plugin: Tüm Canavarlar öldürüldü!")
 		# Waits for pickable drops from pick filter database
 		conn = GetFilterConnection()
 		cursor = conn.cursor()
@@ -405,7 +405,7 @@ def IsPickable(filterCursor,ItemID):
 def WaitPickableDrops(filterCursor,waiting=0):
 	# Time is over for waiting drops
 	if waiting >= WAIT_DROPS_DELAY_MAX:
-		log("Plugin: Timeout for picking up drops!")
+		log("Plugin: Eşyaları almak için zaman aşımı!")
 		return
 	# check if there is a pickable drop
 	drops = get_drops()
@@ -418,7 +418,7 @@ def WaitPickableDrops(filterCursor,waiting=0):
 				drop = value
 				break
 		if drop:
-			log('Plugin: Waiting for picking up "'+drop['name']+'"...')
+			log('Plugin: Almak için bekliyorum "'+drop['name']+'"...')
 			# wait 1s
 			sleep(1.0)
 			# Check again
@@ -476,14 +476,14 @@ def EnterToDimensional(Name):
 		Timer(5.0,start_bot).start()
 		return
 	# Error message
-	log('Plugin: "'+Name+'" cannot be found around you!')
+	log('Plugin: "'+Name+'" etrafınızda bulunamadı.')
 
 # Avoid interpreter lock
 def GoDimensionalThread(Name):
 	# Check if dimensional still opened
 	if dimensionalItemActivated:
 		Name = dimensionalItemActivated['name']
-		log('Plugin: '+( '"'+Name+'"' if Name else 'Dimensional Hole')+' still opened!')
+		log('Plugin: '+( '"'+Name+'"' if Name else 'Dimensional Hole')+' hala açık!')
 		EnterToDimensional(Name)
 		return
 	# Check if the item exists on inventory
@@ -503,7 +503,7 @@ def GoDimensionalThread(Name):
 		inject_joymax(0x704C,p,True)
 	else:
 		# Error message
-		log('Plugin: '+( '"'+Name+'"' if Name else 'Dimensional Hole')+' cannot be found at your inventory')
+		log('Plugin: '+( '"'+Name+'"' if Name else 'Dimensional Hole')+' envanterinizde bulunamıyor.')
 
 # ______________________________ Events ______________________________ #
 
@@ -531,7 +531,7 @@ def AttackArea(args):
 		Timer(0.001,AttackMobs,[COUNT_MOBS_DELAY,False,p,radius]).start()
 	# otherwise continue normally
 	else:
-		log("Plugin: No mobs at this area. Radius: "+(str(radius) if radius != None else "Max."))
+		log("Plugin: Bu bölgede Canavar yok. Menzil : "+(str(radius) if radius != None else "Max."))
 	return 0
 
 # Use, select and enter to the dimensional forgotten world. 
@@ -562,7 +562,7 @@ def handle_joymax(opcode, data):
 			packet += b'\x00\x00\x00\x00' # unknown ID
 			packet += b'\x01' # Accept flag
 			inject_joymax(0x751C,packet,False)
-			log('Plugin: Forgotten World invitation accepted!')
+			log('Plugin: Unutulmuş Dünya daveti kabul edildi!')
 	# SERVER_INVENTORY_ITEM_USE
 	elif opcode == 0xB04C:
 		# Just check recent item used to keep it simple
@@ -570,7 +570,7 @@ def handle_joymax(opcode, data):
 		if itemUsedByPlugin:
 			# Success
 			if data[0] == 1:
-				log('Plugin: "'+itemUsedByPlugin['name']+'" has been opened')
+				log('Plugin: "'+itemUsedByPlugin['name']+'" açıldı.')
 				# Set timer for cooldown usage
 				global dimensionalItemActivated
 				dimensionalItemActivated = itemUsedByPlugin
@@ -581,13 +581,13 @@ def handle_joymax(opcode, data):
 				# Avoid locking the proxy thread
 				Timer(1.0,EnterToDimensional,[itemUsedByPlugin['name']]).start()
 			else:
-				log('Plugin: "'+itemUsedByPlugin['name']+'" cannot be opened')
+				log('Plugin: "'+itemUsedByPlugin['name']+'" açılamıyor.')
 			# Stop checking item used
 			itemUsedByPlugin = None
 	return True
 
 # Plugin loaded
-log("Plugin: "+pName+" Çalışıyor...")
+log("Plugin: "+pName+" Yüklendi! Çalışıyor...")
 
 if os.path.exists(getPath()):
 	# Adding RELOAD plugin support
@@ -595,7 +595,7 @@ if os.path.exists(getPath()):
 		loadConfigs()
 	except:
 		# Just in case omg -_-
-		log('Plugin: Error loading '+pName+' config file')
+		log('Plugin: '+pName+' yapılandırma dosyası yüklenirken hata oluştu.')
 else:
 	# Creating configs folder
 	os.makedirs(getPath())

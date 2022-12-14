@@ -42,9 +42,9 @@ store_take_gold_guild_storage_amount_widget_default = '0'
 
 gui = QtBind.init(__name__, 'xSırala')
 
-metaby = QtBind.createLabel(gui,'edited by hakankahya',590,298)
+metaby = QtBind.createLabel(gui,'edited by hakankahya',530,170)
 
-gui_window_padding_x = 80
+gui_window_padding_x = 50
 gui_window_padding_y = 30
 
 # ---
@@ -63,11 +63,11 @@ gui_debug_position_y = gui_window_padding_y + 80
 
 # ---
 
-QtBind.createLabel(gui, 'İşlemi Durdurmak:', gui_stop_processing_position_x, gui_stop_processing_position_y)
+QtBind.createLabel(gui, ' ↓ İşlemi Durdurmak : ↓', gui_stop_processing_position_x, gui_stop_processing_position_y)
 QtBind.createButton(gui, 'stop_processing', 'Durdur', gui_stop_processing_position_x + 15,
                     gui_stop_processing_position_y + 20)
 
-QtBind.createLabel(gui, 'Itemleri Sırala:', gui_sort_items_position_x, gui_sort_items_position_y)
+QtBind.createLabel(gui, ' ↓ Itemleri Sırala : ↓', gui_sort_items_position_x, gui_sort_items_position_y)
 QtBind.createButton(gui, 'sort_items_inventory', 'Envanter', gui_sort_items_position_x + 15,
                     gui_sort_items_position_y + 20)
 QtBind.createButton(gui, 'sort_items_storage', 'Depo', gui_sort_items_position_x + 15,
@@ -75,7 +75,7 @@ QtBind.createButton(gui, 'sort_items_storage', 'Depo', gui_sort_items_position_x
 QtBind.createButton(gui, 'sort_items_guild_storage', 'Guild Depo', gui_sort_items_position_x + 15,
                     gui_sort_items_position_y + 20 + 60)
 
-QtBind.createLabel(gui, 'Gold Depola/Al', gui_store_take_gold_position_x, gui_store_take_gold_position_y)
+QtBind.createLabel(gui, ' ↓ Gold Depola/Al ↓', gui_store_take_gold_position_x, gui_store_take_gold_position_y)
 QtBind.createLabel(gui, 'Depo', gui_store_take_gold_position_x + 15, gui_store_take_gold_position_y + 20)
 store_take_gold_storage_amount_widget_widget = QtBind.createLineEdit(gui,
                                                                      store_take_gold_storage_amount_widget_widget_default,
@@ -96,12 +96,12 @@ QtBind.createButton(gui, 'store_gold_guild_storage', 'Depola', gui_store_take_go
 QtBind.createButton(gui, 'take_gold_guild_storage', 'Al', gui_store_take_gold_position_x + 15 + 105 + 80,
                     gui_store_take_gold_position_y + 20 + 20 + 50)
 
-QtBind.createLabel(gui, 'Ayıklama Modu:', gui_debug_position_x, gui_debug_position_y)
+QtBind.createLabel(gui, ' ↓ Ayıklama Modu : Seçiniz ↓', gui_debug_position_x, gui_debug_position_y)
 debug_list_widget = QtBind.createList(gui, gui_debug_position_x + 15, gui_debug_position_y + 20, 75, 75)
 QtBind.append(gui, debug_list_widget, '0')
 QtBind.append(gui, debug_list_widget, '1')
 QtBind.append(gui, debug_list_widget, '2')
-QtBind.append(gui, debug_list_widget, '3')
+QtBind.append(gui, debug_list_widget, '3 - Detaylı')
 QtBind.createButton(gui, 'set_debug_mode', 'Değiştir', gui_debug_position_x + 15, gui_debug_position_y + 20 + 80)
 
 
@@ -182,7 +182,7 @@ def set_debug_mode():
         return
     prev_mode = debug
     debug = mode
-    log('[%s] %s: switched from %i to %i' % (__name__, 'Ayıklama Modu', prev_mode, mode))
+    log('[%s] %s: %i dan %i e geçti.' % (__name__, 'Ayıklama Modu', prev_mode, mode))
     pass
 
 
@@ -193,7 +193,7 @@ def sort_items_inventory():
         return
     running = 'sort_items_inventory'
     job = get_running_job()
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     thread = Thread(target=sort_items, args=('inventory',))
     thread.start()
 
@@ -204,7 +204,7 @@ def sort_items_storage():
     if running != False:
         return
     running = 'sort_items_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     thread = Thread(target=sort_items, args=('storage',))
     thread.start()
 
@@ -215,7 +215,7 @@ def sort_items_guild_storage():
     if running != False:
         return
     running = 'sort_items_guild_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     thread = Thread(target=sort_items, args=('guild_storage',))
     thread.start()
 
@@ -229,7 +229,7 @@ def store_gold_storage():
     if running != False:
         return
     running = 'store_gold_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     amount = fetch_amount(QtBind.text(gui, store_take_gold_storage_amount_widget_widget))
     QtBind.setText(gui, store_take_gold_storage_amount_widget_widget,
                    store_take_gold_storage_amount_widget_widget_default)
@@ -246,7 +246,7 @@ def store_gold_guild_storage():
     if running != False:
         return
     running = 'store_gold_guild_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     amount = fetch_amount(QtBind.text(gui, store_take_gold_guild_storage_amount_widget))
     QtBind.setText(gui, store_take_gold_guild_storage_amount_widget,
                    store_take_gold_guild_storage_amount_widget_default)
@@ -263,7 +263,7 @@ def take_gold_storage():
     if running != False:
         return
     running = 'take_gold_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     amount = fetch_amount(QtBind.text(gui, store_take_gold_storage_amount_widget_widget))
     QtBind.setText(gui, store_take_gold_storage_amount_widget_widget,
                    store_take_gold_storage_amount_widget_widget_default)
@@ -280,7 +280,7 @@ def take_gold_guild_storage():
     if running != False:
         return
     running = 'take_gold_guild_storage'
-    log('[%s] %s: started' % (__name__, get_running_job()))
+    log('[%s] %s: başladı' % (__name__, get_running_job()))
     amount = fetch_amount(QtBind.text(gui, store_take_gold_guild_storage_amount_widget))
     QtBind.setText(gui, store_take_gold_guild_storage_amount_widget,
                    store_take_gold_guild_storage_amount_widget_default)
@@ -310,7 +310,7 @@ def npc_get_id(type):
 def send_npc_select(type, timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: npc select' % (__name__))
+        log('[%s] DEBUG1: NPC Seçildi.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ type: %s' % (__name__, type))
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
@@ -333,7 +333,7 @@ def send_npc_select(type, timeout=1.0):
 def send_npc_unselect(timeout=0.5):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: npc unselect' % (__name__))
+        log('[%s] DEBUG1: NPC Seçilemedi.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     opcode = 0xB04B
@@ -349,7 +349,7 @@ def send_npc_unselect(timeout=0.5):
 def send_guild_storage_lock(timeout=0.5):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: guild-storage lock' % (__name__))
+        log('[%s] DEBUG1: Guild Depo Kilitli.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('guild_storage')
@@ -371,7 +371,7 @@ def send_guild_storage_lock(timeout=0.5):
 def send_guild_storage_unlock(timeout=0.5):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: guild-storage unlock' % (__name__))
+        log('[%s] DEBUG1: Guild Kilit açık.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('guild_storage')
@@ -393,7 +393,7 @@ def send_guild_storage_unlock(timeout=0.5):
 def send_storage_refresh(timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: storage refresh' % (__name__))
+        log('[%s] DEBUG1: Depo Yenilendi.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('storage')
@@ -415,7 +415,7 @@ def send_storage_refresh(timeout=1.0):
 def send_guild_storage_refresh(timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: guild-storage refresh' % (__name__))
+        log('[%s] DEBUG1: Guild Depo Yenilendi.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('guild_storage')
@@ -435,7 +435,7 @@ def send_guild_storage_refresh(timeout=1.0):
 def send_storage_open(timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: storage open' % (__name__))
+        log('[%s] DEBUG1: Depo Açıldı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('storage')
@@ -457,7 +457,7 @@ def send_storage_open(timeout=1.0):
 def send_guild_storage_open(timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: guild-storage open' % (__name__))
+        log('[%s] DEBUG1: Guild Depo Açıldı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('guild_storage')
@@ -479,7 +479,7 @@ def send_guild_storage_open(timeout=1.0):
 def send_storage_close(timeout=0.5):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: storage close' % (__name__))
+        log('[%s] DEBUG1: Depo Kapatıldı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('storage')
@@ -501,7 +501,7 @@ def send_storage_close(timeout=0.5):
 def send_guild_storage_close(timeout=0.5):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: guild-storage close' % (__name__))
+        log('[%s] DEBUG1: Guild Depo Kapatıldı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     npc_id = npc_get_id('guild_storage')
@@ -523,7 +523,7 @@ def send_guild_storage_close(timeout=0.5):
 def send_move_item(type, source_slot, destination_slot, timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: move item' % (__name__))
+        log('[%s] DEBUG1: Taşınan eşya' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ source_slot: %i' % (__name__, source_slot))
         log('[%s] DEBUG2:  └ destination_slot: %i' % (__name__, destination_slot))
@@ -571,7 +571,7 @@ def send_move_item(type, source_slot, destination_slot, timeout=1.0):
 def send_store_gold(type, amount, timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: store gold' % (__name__))
+        log('[%s] DEBUG1: Altın Depolandı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     opcode = 0x7034
@@ -593,7 +593,7 @@ def send_store_gold(type, amount, timeout=1.0):
 def send_take_gold(type, amount, timeout=1.0):
     global debug
     if debug >= 1:
-        log('[%s] DEBUG1: sending: take gold' % (__name__))
+        log('[%s] DEBUG1: Altın Alındı.' % (__name__))
     if debug >= 2:
         log('[%s] DEBUG2:  └ timeout: %.1f' % (__name__, timeout))
     opcode = 0x7034
@@ -698,7 +698,7 @@ def sort_items(type):
             break
         if i + item_slots[0] == i:
             continue
-        log('[%s] %s: moving slot %i to slot %i' % (__name__, get_running_job(), i + item_slots[0], i))
+        log('[%s] %s: %i Yuvasını %i Yuvasına Taşındı' % (__name__, get_running_job(), i + item_slots[0], i))
         send_move_item(type, i + item_slots[0], i)
     if type == 'storage':
         send_storage_close()
@@ -781,5 +781,4 @@ def take_gold(type, amount):
         # send_npc_unselect() # this is done by the client itself
     stop_processing(True)
 
-
-log('Plugin: %s Çalışıyor...' % (__name__))
+log('Plugin: %s Yüklendi! Çalışıyor...' % (__name__))
