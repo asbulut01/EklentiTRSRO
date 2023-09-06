@@ -2034,7 +2034,7 @@ def CheckForUpdate():
 	global NewestVersion
 	if NewestVersion == 0:
 		try:
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/DenemeEklenti/main/EsyaBildir.py', headers={'User-Agent': 'Mozilla/5.0'})
+			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/EsyaBildir.py', headers={'User-Agent': 'Mozilla/5.0'})
 			with urllib.request.urlopen(req) as f:
 				lines = str(f.read().decode("utf-8")).split()
 				for num, line in enumerate(lines):
@@ -2053,7 +2053,7 @@ def button_update():
 	if os.path.exists(path + "Plugins/" + "EsyaBildir.py"):
 		try:
 			os.rename(path + "Plugins/" + "EsyaBildir.py", path + "Plugins/" + "EsyaBildirBACKUP.py")
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/DenemeEklenti/main/EsyaBildir.py', headers={'User-Agent': 'Mozilla/5.0'})
+			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/EsyaBildir.py', headers={'User-Agent': 'Mozilla/5.0'})
 			with urllib.request.urlopen(req) as f:
 				lines = str(f.read().decode("utf-8"))
 				with open(path + "Plugins/" + "EsyaBildir.py", "w+") as f:
