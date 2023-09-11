@@ -10,7 +10,7 @@ import sqlite3
 import urllib.request
 
 name = 'EsyaBildir'
-version = 2.0
+version = 2.1
 NewestVersion = 0
 
 gui = QtBind.init(__name__, name)
@@ -53,6 +53,13 @@ def btnstone_clicked():
 def btnfgw_clicked():
     QtBind.clear(gui,lstInfo)
     QtBind.append(gui,lstInfo,'     "Verilen Komutlar Envanter, Pet ve Deponuzu Kontrol Etmektedir."\n- 8FGW1 : (8DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 8FGW2 : (8DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 9FGW1 : (9DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 9FGW2 : (9DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 10FGW1 : (10DG MOON) Kolay Düşen Kartların miktarını bildirir.\n- 10FGW2 : (10DG MOON) Zor Düşen Kartların miktarını bildirir.\n- 11FGW1 : (11DG EGYPY A) Kolay Düşen Kartların miktarını bildirir.\n- 11FGW2 : (11DG EGPTY A) Zor Düşen Kartların miktarını bildirir.')
+
+def connected():
+	global inGame
+	inGame = None
+
+def joined_game():
+	loadConfigs()
 
 def getPath():
 	return get_config_dir()+name+"\\"
