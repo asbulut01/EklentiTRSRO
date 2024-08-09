@@ -6,7 +6,7 @@ import urllib.request
 import os
 
 name = 'TR_CarnivalBalloon'
-version = '2.0'
+version = '2.1'
 NewestVersion = 0
 
 INFLATE_BALLOON_LEVEL_STOP = 6
@@ -49,8 +49,7 @@ def InflateNewBalloon():
     else:
         global isInflating
         isInflating = False
-        log('Eklenti: Balon Bulunamadı, Return Çekiliyor..')
-        use_return_scroll()
+        log('Eklenti: Balon Bulunamadı, Bot Başlatılıyor..')
         start_bot()
 
 def LevelUpBalloon():
