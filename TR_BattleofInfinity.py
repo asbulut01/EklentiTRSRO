@@ -9,7 +9,7 @@ import random
 from operator import add, sub
 
 name = 'TR_Battle of Infinity'
-version = 2.0
+version = 2.8
 NewestVersion = 0
 path = get_config_dir() + name + "\\"
 
@@ -39,23 +39,24 @@ MorphID = 0
 gui = QtBind.init(__name__, name)
 
 lbl = QtBind.createLabel(gui,'Saldırı Menzili ',400,20)
-txtRadius = QtBind.createLineEdit(gui,"45",470,15,25,20)
+txtRadius = QtBind.createLineEdit(gui,"40",470,15,25,20)
   
 lbl = QtBind.createLabel(gui,'Başlamadan Önce           Parti Üyesinin Girmesini Bekle.',400,40)
 lbl = QtBind.createLabel(gui,'*Kendi Karakterini Dahil Etme.',550,53)
 txtPartyMembers = QtBind.createLineEdit(gui,"1",490,35,25,20)
 
-cbxChange = QtBind.createCheckBox(gui, 'cbxChange_clicked','Solo Tamamlandığında Parti Moduna Geç.', 400, 70)
-lbl = QtBind.createLabel(gui,'Parti Modu Profili: ',428,90)
-txtPartyProfile = QtBind.createLineEdit(gui,"",515,88,90,20)
+cbxChange = QtBind.createCheckBox(gui, 'cbxChange_clicked','Tekli tamamlandığında grup moduna geç', 400, 70)
+lbl = QtBind.createLabel(gui,'Grup modu profili ',430,90)
+txtPartyProfile = QtBind.createLineEdit(gui,"",520,88,90,20)
 
-cbxFinished = QtBind.createCheckBox(gui, 'cbxFinished_clicked','Tamamlanınca Şehre Dönüşte Istenilen Profilde Botu Başlat.', 400, 110)
-lbl = QtBind.createLabel(gui,'Kasılma Profili: ',445,130)
-txtFinishedProfile = QtBind.createLineEdit(gui,"",515,128,90,20)
-cbxTerminate = QtBind.createCheckBox(gui, 'cbxTerminate_clicked','Tamamlandığında Botu Sonlandır.', 400, 160)
-cbxUseHighSkills = QtBind.createCheckBox(gui, 'cbxUseHighSkills','Her Zaman Yüksek Becerileri Kullan.', 400, 190)
+cbxFinished = QtBind.createCheckBox(gui, 'cbxFinished_clicked','Bittiğinde geri dön ve botu başlat', 400, 110)
+lbl = QtBind.createLabel(gui,'Eğitim profili ',430,130)
+txtFinishedProfile = QtBind.createLineEdit(gui,"",520,128,90,20)
+cbxTerminate = QtBind.createCheckBox(gui, 'cbxTerminate_clicked','Bittiğinde Botu Sonlandır', 400, 150)
+cbxUseHighSkills = QtBind.createCheckBox(gui, 'cbxUseHighSkills','Her Zaman En Yüksek Yetenekleri Kullan', 400, 180)
+cbxRandomTarget = QtBind.createCheckBox(gui, 'cbxRandomTarget','Rastgele Hedef Seç', 400, 210)
 
-lbl = QtBind.createLabel(gui,'Güncel Aşama: ',10,250)
+lbl = QtBind.createLabel(gui,'Mevcut Aşama: ',10,250)
 lblStage = QtBind.createLabel(gui,'0',85,250)
 
 cbxSolo71to80 = QtBind.createCheckBox(gui, 'cbxSolo71to80_clicked','Solo Seviye (71-80)', 10, 20)
@@ -78,12 +79,11 @@ cbxPT101to110 = QtBind.createCheckBox(gui, 'cbxPT101to110_clicked','Parti Seviye
 cbxNephthys = QtBind.createCheckBox(gui, 'cbxNephthys_clicked','Nephthys (A)', 140, 180)
 cbxTombSnakeLady = QtBind.createCheckBox(gui, 'cbxTombSnakeLady_clicked','Tomb Snake Lady (B)', 250, 180)
 
-buttonStartStop = QtBind.createButton(gui, 'button_start', '  Başlat  ', 22, 220)
+buttonStartStop = QtBind.createButton(gui, 'button_start', '  Start  ', 25, 220)
 
 RegCheckBoxes = [cbxSolo71to80,cbxPT71to80,cbxSolo81to90,cbxPT81to90,cbxSolo91to100,cbxPT91to100,cbxSolo101to110,cbxPT101to110]
 MorphCheckBoxes = [cbxYeoha,cbxSeiren,cbxNiyaShaman,cbxSlaveWatcher,cbxDemonShaitan,cbxImhotep,cbxNephthys,cbxTombSnakeLady]
 
-#type checkboxes
 def cbxSolo71to80_clicked(checked):
 	if checked:
 		ClearGUI('Morph',cbxYeoha,cbxSeiren)
@@ -117,7 +117,6 @@ def cbxPT101to110_clicked(checked):
 		ClearGUI('Morph',cbxNephthys,cbxTombSnakeLady)
 		ClearGUI('Reg',cbxPT101to110)
 
-#morph checkboxes...tard proof?
 def cbxYeoha_clicked(checked):
 	if QtBind.isChecked(gui,cbxSolo71to80) or QtBind.isChecked(gui,cbxPT71to80):
 		if checked:
@@ -196,14 +195,16 @@ def ClearGUI(type,DontClear,DontClear2=None):
 def button_start():
 	global Started, Registering, Attacking, WaitingforParty, Picking, Inside
 	stop_bot()
+	if NewestVersion > int(str(version).replace(".","")):
+		log('Eklenti: [%s] için bir güncelleme mevcut!' % name)
 	if Started == False:
 		if OptionsSelected():
 			if Online():
 				SaveConfig()
 			Started = True
-			QtBind.setText(gui,buttonStartStop,'  Durdur  ')
+			QtBind.setText(gui,buttonStartStop,'  Stop  ')
 			if WheresWaldo():
-				log('Eklenti: Eklentiyi Dışarıda Başlatmalısın!')
+				log('Eklenti: Eklentiyi Dışarıda Başlatın!')
 			else:
 				Registering = True
 			return
@@ -214,7 +215,7 @@ def button_start():
 		WaitingforParty = False
 		Picking = False
 		Inside = False
-		QtBind.setText(gui,buttonStartStop,'  Başlat  ')
+		QtBind.setText(gui,buttonStartStop,'  Start  ')
 
 def Register():
 	if OptionsSelected():
@@ -227,8 +228,9 @@ def Register():
 				packet += struct.pack('<I', type)
 				inject_joymax(0x705A,packet,False)
 				return
-		log('Eklenti: Arena Yöneticisinin Yanında Olmalısın!')
+		log('Eklenti: Arena Yöneticisinin Yakınında Değilsiniz')
 		
+
 def BeginBattle():
 	move_to(14675.0, 2592.0, 0.0)
 	npcs = get_npcs()
@@ -268,7 +270,6 @@ def ChangetoMob():
 			packet = b'\x03'
 			packet += struct.pack('<I', key)
 			inject_joymax(0x7588,packet,False)
-			#move to attack area
 			Timer(1.0, move_to, [14730.0, 2587.0, 0.0]).start()
 			Timer(5.0, move_to, [14737.0, 2593.0, 0.0]).start()
 			Timer(6.0, StartAttack, ()).start()
@@ -359,13 +360,15 @@ def RemoveSkill(SkillID):
 	if SkillID in ActiveSkills:
 		ActiveSkills.remove(SkillID)
 
+SelectedMob = 0
 def UseSkill():
-	global ActiveSkills, SkillDelay, Backup, AttackAttempts
+	global ActiveSkills, SkillDelay, Backup, AttackAttempts, SelectedMob
 	if Started:
 		SkillDelay = 500
 		for skill in CastSkills:
 			if skill not in ActiveSkills:
 				MobID = GetMobID()
+				SelectedMob = MobID
 				if MobID > 0:
 					AttackAttempts += 1
 					if AttackAttempts >= 3:
@@ -373,9 +376,7 @@ def UseSkill():
 						AttackAttempts = 0
 						Backup.cancel()
 					AttackMob(skill,MobID)
-					#skill cooldown minus alittle
 					SkillDelay = 3000
-					#for your viewing pleasure
 					SelectMob(MobID)
 					Backup = Timer(UnstuckAfter, UseSkill)
 					Backup.start()
@@ -387,17 +388,28 @@ def SelectMob(targetID):
 
 def GetMobID():
 	global MoveAttempts
+	MobIDs = []
 	AttackRadius = int(QtBind.text(gui,txtRadius))
 	Mobs = get_monsters()
 	if Mobs:
 		for key, mob in Mobs.items():
 			dist = CalcRadiusFromME(mob['x'],mob['y'])
 			if dist < AttackRadius:
-				return key
+				if QtBind.isChecked(gui,cbxRandomTarget):
+					MobIDs.append(key)
+				else:
+					return key
 			else:
-				return 0
+				if QtBind.isChecked(gui,cbxRandomTarget):
+					continue
+				else:
+					return 0
+		if QtBind.isChecked(gui,cbxRandomTarget):
+			if SelectedMob in MobIDs:
+				return SelectedMob
+			return random.choice(MobIDs)
+			
 	elif not AtAttackArea():
-		#move back to center
 		if MoveAttempts <= 5:
 			MoveAttempts += 1
 			move_to(14737.0, 2593.0, 0.0)
@@ -414,7 +426,7 @@ def MovetoRandomPoint():
 	operator = random.choice(ops)
 	Y = operator(get_character_data()['y'], number)
 	move_to(X, Y, 0.0)
-	log('Eklenti: Muhtemelen Sıkıştı, Hareket Ediliyor.')
+	log('Eklenti: Sıkışmış olabilir.. Hareket ediliyor')
 	MoveAttempts = 0
 
 def AtAttackArea():
@@ -443,11 +455,11 @@ def ConfirmAreaChanged():
 		ChangeAreaAttempts = 0
 		return True
 	elif ChangeAreaAttempts < 5:
-		log('Eklenti: Kasılma Alanına Hareket Edemedi, Yeniden Deneniyor.')
+		log('Eklenti: Eğitim Alanı Taşınamadı.. Tekrar Deneniyor')
 		ChangeAreaAttempts += 1
 		MovetoPick()
 		return
-	log('Eklenti: Kasılma alanına ulaşılamadı.')
+	log('Eklenti: Eğitim alanı taşınamadı')
 	ChangeAreaAttempts = 0
 	start_bot()
 
@@ -480,21 +492,19 @@ def CheckforParty():
 				if player['player_id'] > 0:
 					MembersInside += 1
 					if MembersInside >= WaitFor:
-						log('Eklenti: Tüm Parti Üyeleri Içeri Girdi, Savaş Başlatılıyor...')
+						log('Eklenti: Tüm grup üyeleri girdi.. savaş başlıyor')
 						WaitingforParty = False
 						Timer(5.0, BeginBattle, ()).start()
 						return
-			log('Eklenti: Tüm Parti Üyeleri Giriş Yapmadı, Bekleniyor...')
+			log('Eklenti: Tüm grup üyeleri girmedi.. Bekleniyor')
 			Timer(5.0, CheckforParty, ()).start()
 
 def OptionsSelected():
 	if QtBind.isChecked(gui,cbxSolo71to80) or QtBind.isChecked(gui,cbxSolo81to90) or QtBind.isChecked(gui,cbxSolo91to100) or QtBind.isChecked(gui,cbxSolo101to110) or QtBind.isChecked(gui,cbxPT71to80) or QtBind.isChecked(gui,cbxPT81to90) or QtBind.isChecked(gui,cbxPT91to100) or QtBind.isChecked(gui,cbxPT101to110):
 		return True
-	log('Eklenti: Önce Gerekli Tüm Seçenekleri Seçin!')
+	log('Eklenti: Lütfen gerekli tüm seçenekleri seçin')
 	return False
 
-# script command BOI,type,morph
-#ex..BOI,solo,A .... BOI,party,B
 def BOI(args):
 	ClearGUI('Morph',None)
 	ClearGUI('Reg',None)
@@ -537,7 +547,7 @@ def BOI(args):
 			QtBind.setChecked(gui,cbxNephthys,True)
 		if morph == 'B':
 			QtBind.setChecked(gui,cbxTombSnakeLady,True)
-	log('Eklenti: Battle of infinity Ayarları Kaydedildi.')
+	log('Eklenti: Battle of infinity Ayarları Yapıldı')
 	Timer(1.0, button_start, ()).start()
 	return 0
 
@@ -549,7 +559,6 @@ def RemoveMorph():
 			packet += struct.pack('<I', ID)
 			packet += b'\x00'
 			inject_joymax(0x7074,packet,False)
-			
 
 def ChangetoParty():
 	ClearGUI('Morph',None)
@@ -571,11 +580,10 @@ def ChangetoParty():
 		QtBind.setChecked(gui,cbxPT101to110,True)
 		QtBind.setChecked(gui,cbxNephthys,True)
 
-
 def ReturntoTraining():
 	global Started, Registering, Attacking, WaitingforParty, Picking, PartyCount, SoloCount, Inside
 	if QtBind.isChecked(gui,cbxFinished):
-		log('Eklenti: Kasılma Alanına Devam Ediliyor...')
+		log('Eklenti: Eğitim alanına dönülüyor')
 		ClearGUI('Morph',None)
 		ClearGUI('Reg',None)
 		Started = False
@@ -586,14 +594,13 @@ def ReturntoTraining():
 		Inside = False
 		PartyCount = 0
 		SoloCount = 0
-		QtBind.setText(gui,buttonStartStop,'  Başlat  ')
+		QtBind.setText(gui,buttonStartStop,'  Start  ')
 		profile = QtBind.text(gui,txtFinishedProfile)
 		if profile:
 			set_profile(profile)
 		Timer(1.0, use_return_scroll, ()).start()
 		Timer(10.0, start_bot, ()).start()
 
-#conditions
 def SoloDone():
 	if SoloCount >= 2:
 		return True
@@ -618,14 +625,13 @@ def teleported():
 				SoloCount = 0
 			Registering = False
 			Inside = True
-			log('Eklenti: Başarıyla Savaşa Girdi.')
+			log('Eklenti: Savaşa Başarıyla Girildi')
 			if not get_party():
 				Timer(5.0, BeginBattle, ()).start()
 			else:
 				WaitingforParty = True
-				log('Eklenti: Tüm Parti Üyelerinin Giriş Yapması Bekleniyor...')
+				log('Eklenti: Parti Üyelerinin İçeri Girmesini Beklemek')
 				Timer(8.0, CheckforParty, ()).start()
-		#failed
 		elif Attacking:
 			Inside = False
 			if PartyCount >= 2:
@@ -633,7 +639,6 @@ def teleported():
 			Attacking = False
 			Timer(5.0, StartReg, ()).start()
 			QtBind.setText(gui,lblStage,'0')
-		#successful
 		elif Picking:
 			if PartyCount >= 2:
 				Timer(0.1, ReturntoTraining, ()).start()
@@ -642,12 +647,11 @@ def teleported():
 			Inside = False
 			stop_bot()
 			QtBind.setText(gui,lblStage,'0')
-			log('Eklenti: Battle of Infinity Tamamlandı.')
-		#party didnt enter
+			log('Eklenti: Battle of Infinity Tamamlandı')
 		elif WaitingforParty:
 			if PartyCount >= 2:
 				Timer(0.1, ReturntoTraining, ()).start()
-			log('Eklenti: Parti Üyesi Zamanında Giriş Yapmadı.')
+			log('Eklenti: Parti üyesi zamanında girmedi')
 			WaitingforParty = False
 			Timer(5.0, StartReg, ()).start()
 			Inside = False
@@ -671,10 +675,9 @@ def event_loop():
 				if partycount >= WaitFor:
 					Register()
 				else:
-					log('Eklenti: Kayıt Öncesi Parti Üyeleri Bekleniyor...')
+					log('Eklenti: Kaydolmadan önce Parti Üyeleri Bekleniyor')
 			else:
 				Register()
-
 
 def handle_joymax(opcode, data):
 	global Attacking, Picking, GettingMorph, Backup, AttackAttempts
@@ -682,13 +685,13 @@ def handle_joymax(opcode, data):
 		if data[0] == 2 and data[2] == 28:
 			response = data[1]
 			if response == 60:
-				log('Eklenti: Henüz Dungeona Tekrar Giremezsin! Tekrar Deneniyor...')	
+				log('Eklenti: Zindana henüz tekrar giremezsiniz!')	
 			elif response == 42:
-				log('Eklenti: Partide Değilsin!')
+				log('Eklenti: Bir partide değilsiniz!')
 			elif response == 44:
-				log('Eklenti: Giriş Için yeterli Seviyede Değilsin!')
+				log('Eklenti: Giriş için gerekli seviyede değilsiniz!')
 			elif response == 39:
-				log("Eklenti: Günlük Limitin Doldu!")
+				log("Eklenti: Çok fazla kez girdiniz!")
 				#for solo only
 				if not QtBind.isChecked(gui,cbxChange) and QtBind.isChecked(gui,cbxFinished):
 					ReturntoTraining()
@@ -699,18 +702,19 @@ def handle_joymax(opcode, data):
 				elif QtBind.isChecked(gui,cbxTerminate):
 					Terminate()
 			elif response == 40:
-				log("Eklenti: Önce Parti Lideri Girmelidir!")
+				log("Eklenti: Parti lideri önce girmeli!")
 				if PartyCount >= 2:
 					if QtBind.isChecked(gui,cbxTerminate):
 						Terminate()
 					elif QtBind.isChecked(gui,cbxFinished):
 						ReturntoTraining()
 			elif response == 66:
-				log("Eklenti: Solo Giriş Için Partide Olamazsın!")
+				log("Eklenti: Tekli girmek için bir partide olamazsınız")
 				if QtBind.isChecked(gui,cbxSolo71to80) or QtBind.isChecked(gui,cbxSolo81to90) or QtBind.isChecked(gui,cbxSolo91to100) or QtBind.isChecked(gui,cbxSolo101to110):
 					#leave party
 					inject_joymax(0x7061,b'',False)
-					log('Eklenti: Partiden Ayrıldı.')
+					log('Eklenti: Partiden Ayrıldı')
+
 
 	#Skill added...maybe not perfect
 	elif opcode == 0xB0BD and Inside and not Picking:
@@ -728,7 +732,7 @@ def handle_joymax(opcode, data):
 		packetIndex = 1
 		SkillID  = struct.unpack_from("<I",data,packetIndex)[0]
 		if SkillID == MorphID:
-			log('Eklenti: Dönüşüm Kaybedildi, Tekrar Dönüşülüyor...')
+			log('Eklenti: Dönüşüm kaybedildi.. Yeniden dönüştürülüyor')
 			Attacking = False
 			Timer(1.0, move_to, [14709.0, 2592.0, 0.0]).start()
 			Timer(3.0, ChangetoMob, ()).start()	
@@ -767,7 +771,11 @@ def handle_joymax(opcode, data):
 				AttackAttempts = 0
 				CoolDown = 5
 				Timer(CoolDown,RemoveSkill,[Skill]).start()
+				
+
+
 	return True
+
 
 def Online():
 	if get_character_data()['player_id'] > 0:
@@ -777,6 +785,7 @@ def Online():
 
 def joined_game():
 	Timer(4.0, loadDefaults, ()).start()
+
 
 def GetConfig():
 	return path + get_character_data()['server'] + "_" + get_character_data()['name'] + ".json"
@@ -791,9 +800,10 @@ def SaveConfig():
 	data["TrainingAreaProfile"] = QtBind.text(gui,txtFinishedProfile)
 	data["Terminate"] = QtBind.isChecked(gui,cbxTerminate)
 	data["UseHighSkills"] = QtBind.isChecked(gui,cbxUseHighSkills)
+	data["RandomTarget"] = QtBind.isChecked(gui,cbxRandomTarget)
 	with open(GetConfig(),"w") as f:
 		f.write(json.dumps(data, indent=4))
-	log("Eklenti: Yapılandırmalar Kaydedildi.")
+	log("Eklenti: Yapılandırmalar kaydedildi")
 
 def LoadConfigs():
 	if os.path.exists(GetConfig()):
@@ -816,6 +826,8 @@ def LoadConfigs():
 			QtBind.setChecked(gui,cbxTerminate,data["Terminate"])
 		if "UseHighSkills" in data:
 			QtBind.setChecked(gui,cbxUseHighSkills,data["UseHighSkills"])
+		if "RandomTarget" in data:
+			QtBind.setChecked(gui,cbxRandomTarget,data["RandomTarget"])
 
 #reloading
 def loadDefaults():
@@ -834,11 +846,14 @@ def loadDefaults():
 		QtBind.setChecked(gui,cbxSolo101to110,True)
 		QtBind.setChecked(gui,cbxNephthys,True)
 
+
+
 def CheckForUpdate():
 	global NewestVersion
+	#avoid request spam
 	if NewestVersion == 0:
 		try:
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_BattleofInfinity.py', headers={'User-Agent': 'Mozilla/5.0'})
+			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/refs/heads/main/TR_BattleofInfinity.py', headers={'User-Agent': 'Mozilla/5.0'})
 			with urllib.request.urlopen(req) as f:
 				lines = str(f.read().decode("utf-8")).split()
 				for num, line in enumerate(lines):
@@ -846,36 +861,21 @@ def CheckForUpdate():
 						NewestVersion = int(lines[num+2].replace(".",""))
 						CurrentVersion = int(str(version).replace(".",""))
 						if NewestVersion > CurrentVersion:
-							log('Eklenti: Yeni bir güncelleme var = [%s]!' % name)
-							lblUpdate = QtBind.createLabel(gui,'Yeni Bir Güncelleme Mevcut. Yüklemek için Tıkla ->',100,283)
-							button1 = QtBind.createButton(gui, 'button_update', ' Güncelle ', 350, 280)
+							log('Eklenti: [%s] için bir güncelleme mevcut!' % name)
 		except:
 			pass
-
-def button_update():
-	path = get_config_dir()[:-7]
-	if os.path.exists(path + "Plugins/" + "TR_BattleofInfinity.py"):
-		try:
-			os.rename(path + "Plugins/" + "TR_BattleofInfinity.py", path + "Plugins/" + "TR_BattleofInfinityBACKUP.py")
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_BattleofInfinity.py', headers={'User-Agent': 'Mozilla/5.0'})
-			with urllib.request.urlopen(req) as f:
-				lines = str(f.read().decode("utf-8"))
-				with open(path + "Plugins/" + "TR_BattleofInfinity.py", "w+") as f:
-					f.write(lines)
-					os.remove(path + "Plugins/" + "TR_BattleofInfinityBACKUP.py")
-					log('Eklenti Başarıyla Güncellendi, Kullanmak için Eklentiyi Yeniden Yükleyin.')
-		except Exception as ex:
-			log('Güncelleme Hatası [%s] Lütfen Manuel Olarak Güncelleyin veya daha Sonra Tekrar Deneyin.' %ex)
-
-CheckForUpdate()
 
 def Terminate():
 	os.kill(os.getpid(),9)
 
+
 Timer(1.0, loadDefaults, ()).start()
-log('Eklenti:%s v%s Yuklendi. // edit by hakankahya' % (name,version))
+log('Eklenti: [%s] Sürüm %s Yüklendi. // edit by hakankahya' % (name,version))
+
 
 if not os.path.exists(path):
 	os.makedirs(path)
-	log('Eklenti:%s Klasörü Oluşturuldu.' % name)
+	log('Eklenti: [%s] klasörü oluşturuldu' % name)
 
+
+CheckForUpdate()
