@@ -9,8 +9,8 @@ import urllib.request
 import os
 
 name = 'TR_AutoConsignment'
-version = 2.0
-NewestVersion = 0
+version = 2.1
+
 path = get_config_dir()[:-7]
 
 gui = QtBind.init(__name__, name)
@@ -18,13 +18,14 @@ gui = QtBind.init(__name__, name)
 PageIndex = 0
 ItemCount = 0
 Started = False
-
+NPCthread = None
+Pagethread = None
 
 button1 = QtBind.createButton(gui, 'button_search', ' Ara ', 500, 32)
 lstItems = QtBind.createList(gui,10,62,580,200)
 
 lblBuy = QtBind.createLabel(gui,'Satın Alma Secenekleri',600,23)
-lblBuy = QtBind.createLabel(gui,'Esya Isimleri',600,40)
+lblBuy = QtBind.createLabel(gui,'Öge Isimleri',600,40)
 txtAddItem = QtBind.createLineEdit(gui,"",600,55,120,20)
 lstBuyItems = QtBind.createList(gui,600,102,120,80)
 button1 = QtBind.createButton(gui, 'button_add', '                Ekle               ', 600, 77)
@@ -49,20 +50,34 @@ lblDegree = QtBind.createLabel(gui,'Degre',330,10)
 ComboDegree = QtBind.createCombobox(gui,330,32,150,22)
 
 def button_start():
-	global Started, PageIndex, ItemCount
+	global Started, PageIndex, ItemCount, NPCthread, Pagethread
+	if Started == 'Search':
+		log('Plugin: Şu anda Aranıyor... Lütfen bekleyin...')
+		return
 	if not Started:
+		if NPCthread:
+			NPCthread.cancel()
+		if Pagethread:
+			Pagethread.cancel()
 		Started = True
-		QtBind.setText(gui,buttonStart,'              Durdur             ')
+		QtBind.setText(gui,buttonStart,'              Durdur              ')
 		EnterConsignmentNPC()
 	elif Started:
+		if NPCthread:
+			NPCthread.cancel()
+		if Pagethread:
+			Pagethread.cancel()
 		PageIndex = 0
 		ItemCount = 0
 		Started = False
 		QtBind.setText(gui,buttonStart,'               Baslat             ')
-		ExitNPC()	
+		Timer(1.0, ExitNPC, ()).start()
 
 def button_search():
 	global Started
+	if Started == 'Search':
+		log('Plugin: Currently Searching... Please Wait...')
+		return
 	QtBind.clear(gui,lstItems)
 	Started = 'Search'
 	EnterConsignmentNPC()
@@ -71,12 +86,12 @@ def button_add():
 	item = QtBind.text(gui,txtAddItem)
 	QtBind.append(gui,lstBuyItems,item)
 	QtBind.setText(gui, txtAddItem,"")
-	log('Eklenti: Esya Eklendi [%s]' %item)
+	log('Eklenti: Öğe Eklendi [%s]' %item)
 
 def button_remove():
 	item = QtBind.text(gui,lstBuyItems)
 	QtBind.remove(gui,lstBuyItems,item)
-	log('Eklenti: Esya Silindi [%s]' %item)
+	log('Eklenti: Öğe Silindi [%s]' %item)
 
 
 def LoadList(List):
@@ -139,6 +154,8 @@ def RequestPage(Page):
 
 
 def EnterConsignmentNPC():
+	global Pagethread
+	QtBind.clear(gui,lstItems)
 	npcs = get_npcs()
 	for key, npc in npcs.items():
 		if npc['servername'].startswith('NPC_OPEN_MARKET'):
@@ -147,7 +164,8 @@ def EnterConsignmentNPC():
 			inject_joymax(0x7045,p, False)
 			p += b'\x21'
 			inject_joymax(0x7046,p, False)
-			Timer(2.0,RequestPage(0)).start()
+			Pagethread = Timer(2.0, RequestPage(0))
+			Pagethread.start()
 			return
 	log('Eklenti: Konsiye NPCsi Yanında Değilsin!')
 			
@@ -167,11 +185,11 @@ def BuyItem(CharName,ListingID,ItemID):
 	p += struct.pack("<I", ListingID)
 	p += struct.pack("<I", ItemID)
 	inject_joymax(0x750A,p, False)
-	Timer(3.0, ExitNPC, ()).start()
+	Timer(1.0, ExitNPC, ()).start()
 
 def handle_joymax(opcode,data):
 	if opcode == 0xB50C:
-		global PageIndex, ItemCount, Started
+		global PageIndex, ItemCount, Started, NPCthread, Pagethread
 		if data[0] == 1 and Started or Started == 'Search':
 
 			BuyItems = QtBind.getItems(gui,lstBuyItems)
@@ -208,7 +226,8 @@ def handle_joymax(opcode,data):
 					PageIndex = 0
 					ItemCount = 0
 					#start again in 10 seconds
-					Timer(10.0, EnterConsignmentNPC, ()).start()
+					NPCthread = Timer(20.0, EnterConsignmentNPC)
+					NPCthread.start()
 					return
 
 				itemdata = 'Satıcı:[%s] Adet: [%s] Fiyat: [%s] Esya :[%s]' %(CharName,Quantity,Price,ItemName)
@@ -216,7 +235,8 @@ def handle_joymax(opcode,data):
 			#request next page
 			if PageIndex < NumberOfPages:
 				PageIndex += 1
-				Timer(1.0,RequestPage(PageIndex)).start()
+				Pagethread = Timer(0.1, RequestPage, [PageIndex])
+				Pagethread.start()
 			else:
 				log("Eklenti: Tüm Esyaların Kontrolü Tamamlandı.. Toplam Esyalar[%s]" %ItemCount)
 				PageIndex = 0
@@ -224,7 +244,8 @@ def handle_joymax(opcode,data):
 				Timer(1.0, ExitNPC, ()).start()
 				#start again in 20 seconds
 				if Started != 'Search':
-					Timer(20.0, EnterConsignmentNPC, ()).start()
+					NPCthread = Timer(20.0, EnterConsignmentNPC)
+					NPCthread.start()
 				else:
 					Started = False
 			return False
@@ -361,42 +382,7 @@ ItemList = {
     ]
 }
 
-def CheckForUpdate():
-	global NewestVersion
-	if NewestVersion == 0:
-		try:
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_AutoConsignment.py', headers={'User-Agent': 'Mozilla/5.0'})
-			with urllib.request.urlopen(req) as f:
-				lines = str(f.read().decode("utf-8")).split()
-				for num, line in enumerate(lines):
-					if line == 'version':
-						NewestVersion = int(lines[num+2].replace(".",""))
-						CurrentVersion = int(str(version).replace(".",""))
-						if NewestVersion > CurrentVersion:
-							log('Eklenti: Yeni bir güncelleme var = [%s]!' % name)
-							lblUpdate = QtBind.createLabel(gui,'Yeni Bir Güncelleme Mevcut. Yüklemek için Tıkla ->',100,283)
-							button1 = QtBind.createButton(gui, 'button_update', ' Güncelle ', 350, 280)
-		except:
-			pass
-
-def button_update():
-	path = get_config_dir()[:-7]
-	if os.path.exists(path + "Plugins/" + "TR_AutoConsignment.py"):
-		try:
-			os.rename(path + "Plugins/" + "TR_AutoConsignment.py", path + "Plugins/" + "TR_AutoConsignmentBACKUP.py")
-			req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_AutoConsignment.py', headers={'User-Agent': 'Mozilla/5.0'})
-			with urllib.request.urlopen(req) as f:
-				lines = str(f.read().decode("utf-8"))
-				with open(path + "Plugins/" + "TR_AutoConsignment.py", "w+") as f:
-					f.write(lines)
-					os.remove(path + "Plugins/" + "EsyaBildirBACKUP.py")
-					log('Eklenti Başarıyla Güncellendi, Kullanmak için Eklentiyi Yeniden Yükleyin.')
-		except Exception as ex:
-			log('Güncelleme Hatası [%s] Lütfen Manuel Olarak Güncelleyin veya daha Sonra Tekrar Deneyin.' %ex)
-
-CheckForUpdate()
 
 LoadList('All')
 
 log('Eklenti:%s v%s Yuklendi. // edit by hakankahya' % (name,version))
-
