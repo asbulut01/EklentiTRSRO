@@ -4,28 +4,124 @@ import QtBind
 import struct
 import urllib.request
 import os
+import json
 
 name = 'TR_CarnivalBalloon'
 version = '2.1'
-NewestVersion = 0
 
 INFLATE_BALLOON_LEVEL_STOP = 6
-INFLATE_BALLOON_LEVELUP_DELAY = 1.0
+INFLATE_BALLOON_LEVELUP_DELAY = 5.0
 
 isInflating = False
 inflatingLevel = 0
 
 gui = QtBind.init(__name__, name)
 
-txtOpcode = QtBind.createLineEdit(gui, "", 85, 45, 40, 20)
+txtOpcode = QtBind.createLineEdit(gui, "6", 85, 45, 40, 20)
 btnSetLevel = QtBind.createButton(gui, 'btnSetLevel_clicked', " Seviyeyi Ayarla ", 135, 45)
 lblLevel = QtBind.createLabel(gui, ' Mevcut Seviye: ' + str(INFLATE_BALLOON_LEVEL_STOP), 75, 85)
 btnBaslat = QtBind.createButton(gui, 'InflateBalloons', " Balonları Uçurmaya Başla ", 75, 120)
+lblSpeed = QtBind.createLabel(gui, 'Balon Uçurma Hızı (sn):', 75, 160)
+txtSpeed = QtBind.createLineEdit(gui, str(INFLATE_BALLOON_LEVELUP_DELAY), 220, 160, 40, 20)
+btnSetSpeed = QtBind.createButton(gui, 'btnSetSpeed_clicked', ' Hızı Ayarla ', 270, 160)
+chkReturn = QtBind.createCheckBox(gui, 'return_scroll_changed', 'Return Çekilsin mi?', 75, 200)
+QtBind.setChecked(gui, chkReturn, True)
+
+def get_config_dir():
+    base_path = os.path.join(os.getcwd(), 'Config')
+    plugin_path = os.path.join(base_path, name)
+    if not os.path.exists(plugin_path):
+        os.makedirs(plugin_path)
+        log(f'[{name}] Yedek klasörü oluşturuldu.')
+    return plugin_path + os.sep
+
+def get_config_file():
+    character_data = get_character_data()
+    if not character_data['name'] or not character_data['server']:
+        return None
+    path = get_config_dir()
+    return os.path.join(path, f"{character_data['server']}_{character_data['name']}.json")
+
+def save_config():
+    config_file = get_config_file()
+    if not config_file:
+        log('Karakter bilgisi alınamadı. Lütfen giriş yapın.')
+        return
+
+    data = {
+        "INFLATE_BALLOON_LEVEL_STOP": INFLATE_BALLOON_LEVEL_STOP,
+        "INFLATE_BALLOON_LEVELUP_DELAY": INFLATE_BALLOON_LEVELUP_DELAY,
+        "ReturnScroll": QtBind.isChecked(gui, chkReturn)
+    }
+
+    try:
+        with open(config_file, 'w') as f:
+            json.dump(data, f, indent=4)
+        log('Ayarlar başarıyla kaydedildi.')
+    except Exception as e:
+        log(f'Ayarlar kaydedilirken bir hata oluştu: {e}')
+
+def load_config():
+    config_file = get_config_file()
+    if not config_file or not os.path.exists(config_file):
+        log('Ayar dosyası bulunamadı.')
+        return
+
+    try:
+        with open(config_file, 'r') as f:
+            data = json.load(f)
+
+        global INFLATE_BALLOON_LEVEL_STOP, INFLATE_BALLOON_LEVELUP_DELAY
+        if "INFLATE_BALLOON_LEVEL_STOP" in data:
+            INFLATE_BALLOON_LEVEL_STOP = data["INFLATE_BALLOON_LEVEL_STOP"]
+            QtBind.setText(gui, lblLevel, ' Mevcut Seviye: ' + str(INFLATE_BALLOON_LEVEL_STOP))
+        if "INFLATE_BALLOON_LEVELUP_DELAY" in data:
+            INFLATE_BALLOON_LEVELUP_DELAY = data["INFLATE_BALLOON_LEVELUP_DELAY"]
+            QtBind.setText(gui, txtSpeed, str(INFLATE_BALLOON_LEVELUP_DELAY))
+        if "ReturnScroll" in data:
+            QtBind.setChecked(gui, chkReturn, data["ReturnScroll"])
+
+        log('Ayarlar başarıyla yüklendi.')
+    except Exception as e:
+        log(f'Ayarlar yüklenirken bir hata oluştu: {e}')
+
+def return_scroll_changed(checked):
+    state = 'Evet' if checked else 'Hayır'
+    log(f'Eklenti: Return Çekme Durumu -> {state}')
+    save_config()
+
+def btnSetSpeed_clicked():
+    global INFLATE_BALLOON_LEVELUP_DELAY
+    try:
+        new_speed = float(QtBind.text(gui, txtSpeed))
+        if new_speed > 0:
+            INFLATE_BALLOON_LEVELUP_DELAY = new_speed
+            log(f'Eklenti: Balon uçurma hızı {new_speed} saniye olarak ayarlandı.')
+            save_config()
+        else:
+            log('Eklenti: Hız 0\'dan büyük olmalıdır.')
+    except ValueError:
+        log('Eklenti: Geçerli bir hız değeri giriniz.')
 
 def btnSetLevel_clicked():
     global INFLATE_BALLOON_LEVEL_STOP
-    INFLATE_BALLOON_LEVEL_STOP = int(QtBind.text(gui, txtOpcode))
-    QtBind.setText(gui, lblLevel, ' Mevcut Seviye: ' + str(INFLATE_BALLOON_LEVEL_STOP))
+    try:
+        new_level = int(QtBind.text(gui, txtOpcode))
+        
+        if 1 <= new_level <= 6:
+            INFLATE_BALLOON_LEVEL_STOP = new_level
+            QtBind.setText(gui, lblLevel, ' Mevcut Seviye: ' + str(INFLATE_BALLOON_LEVEL_STOP))
+            log(f'Eklenti: Seviyeyi {INFLATE_BALLOON_LEVEL_STOP} olarak ayarladınız.')
+            save_config()
+        else:
+            log('Eklenti: Seviye 1 ile 6 arasında olmalıdır.')
+    except ValueError:
+        log('Eklenti: Geçerli bir seviye değeri giriniz.')
+
+def joined_game():
+    Timer(2.0, load_config).start()
+
+# Diğer mevcut fonksiyonlar ve eklenti işlevleri burada korunuyor.
 
 def GetItemByExpression(_lambda):
     items = get_inventory()['items']
@@ -49,7 +145,11 @@ def InflateNewBalloon():
     else:
         global isInflating
         isInflating = False
-        log('Eklenti: Balon Bulunamadı, Bot Başlatılıyor..')
+        log('Eklenti: Balon Bulunamadı, Return Çekiliyor...')
+        if QtBind.isChecked(gui, chkReturn):
+            use_return_scroll()
+        else:
+            log('Eklenti: Return Çekme devre dışı bırakıldı.')
         start_bot()
 
 def LevelUpBalloon():
@@ -93,39 +193,4 @@ def handle_joymax(opcode, data):
                 inflatingLevel = 0
     return True
 
-def CheckForUpdate():
-    global NewestVersion
-    if NewestVersion == 0:
-        try:
-            req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_CarnivalBalloon.py', headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req) as f:
-                lines = str(f.read().decode("utf-8")).split()
-                for num, line in enumerate(lines):
-                    if line == 'version':
-                        NewestVersion = int(lines[num+2].replace(".", ""))
-                        CurrentVersion = int(str(version).replace(".", ""))
-                        if NewestVersion > CurrentVersion:
-                            log('Eklenti: Yeni bir güncelleme var = [%s]!' % name)
-                            lblUpdate = QtBind.createLabel(gui, 'Yeni Bir Güncelleme Mevcut. Yüklemek için Tıkla ->', 100, 283)
-                            button1 = QtBind.createButton(gui, 'button_update', ' Güncelle ', 350, 280)
-        except:
-            pass
-
-def button_update():
-    path = get_config_dir()[:-7]
-    if os.path.exists(path + "Plugins/" + "TR_CarnivalBalloon.py"):
-        try:
-            os.rename(path + "Plugins/" + "TR_CarnivalBalloon.py", path + "Plugins/" + "TR_CarnivalBalloonBACKUP.py")
-            req = urllib.request.Request('https://raw.githubusercontent.com/hakankahya48/EklentiTRSRO/main/TR_CarnivalBalloon.py', headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req) as f:
-                lines = str(f.read().decode("utf-8"))
-                with open(path + "Plugins/" + "TR_CarnivalBalloon.py", "w+") as f:
-                    f.write(lines)
-                    os.remove(path + "Plugins/" + "TR_CarnivalBalloonBACKUP.py")
-                    log('Eklenti Başarıyla Güncellendi, Kullanmak için Eklentiyi Yeniden Yükleyin.')
-        except Exception as ex:
-            log('Güncelleme Hatası [%s] Lütfen Manuel Olarak Güncelleyin veya daha Sonra Tekrar Deneyin.' % ex)
-
-CheckForUpdate()
-
-log('Eklenti:%s v%s Yuklendi. // edit by hakankahya' % (name, version))
+log('Eklenti: %s v%s Yuklendi. // edit by hakankahya' % (name, version))
