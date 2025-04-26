@@ -3,10 +3,9 @@ import phBotChat
 import QtBind
 import json
 import os
+import traceback
 
 name = 'TR_InventoryCounter'
-version = 3.5
-NewestVersion = 0
 
 gui = QtBind.init(__name__, name)
 
@@ -19,6 +18,15 @@ metaby = QtBind.createLabel(gui,'edited by hakankahya', 475, 283)
 label_chat_channel = QtBind.createLabel(gui,'Yanıt Kanalı:', 470, 140)
 list_chat_channel_bg = QtBind.createList(gui, 470, 155, 125, 125)
 lstInfo = QtBind.createList(gui,15,40,450,255)
+QtBind.append(gui, lstInfo, "                   TR_InventoryCounter Eklentisine Hoşgeldiniz. ")
+QtBind.append(gui, lstInfo, " ")
+QtBind.append(gui, lstInfo, "   Komutlar hakkında bilgi almak için yukarıdaki butonları kullanabilirsiniz.")
+QtBind.append(gui, lstInfo, " ")
+QtBind.append(gui, lstInfo, "   Lider eklemek ve sohbet ayarları için sağdaki menüyü kullanın.")
+QtBind.append(gui, lstInfo, " ")
+QtBind.append(gui, lstInfo, "   Karakter Bilgi Harici Verilen Komutlar Envanter, Pet, ve Depo\'nuzu Kontrol Etmektedir.")
+QtBind.append(gui, lstInfo, " ")
+QtBind.append(gui, lstInfo, "   Herhangi Bir Hata ile Karşılaştığınızda Bildirmekten Çekinmeyin. Dc ; hakankahya")
 btnkarakter = QtBind.createButton(gui,'btnkarakter_clicked'," Karakter Bilgi ", 15, 11)
 btnelixir = QtBind.createButton(gui,'btnelixir_clicked'," Elixir/Enhancer Bilgi ", 91, 11)
 btnevent = QtBind.createButton(gui,'btnevent_clicked'," Event Bilgi ", 197, 11)
@@ -40,36 +48,36 @@ target_private_name = ""
 
 def btnkarakter_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'- EXP : Suanki LV ve EXP bildirir.\n- SP : Suan ki SP Miktarını belirtir.\n- GOLD : Suanki Altını Bildirir.\n- ENV : Envanterin boş yuva sayısını bildirir.\n- DEPO : Depodaki boş yuva sayısını bildirir.\n- JOBINFO : JOB Nick, Job Seviye, JOB Tipi Ve JOB Exp miktarını bildirir.\n- JOBBOX : Meslek çantasındaki doluluğu bildirir.(Uzmanlik)\n- SOX : Sox Miktarını Bildirir.(Giyilmişler ve Job Setler Haric)')
+    QtBind.append(gui,lstInfo,'- EXP : Suanki LV ve EXP bildirir.\n- SP : Suan ki SP Miktarını belirtir.\n- GOLD : Envanter Altın Miktarını Bildirir.\n- GOLDGUILD : Guild Deposundaki Altın Miktarını Bildirir.\n- GOLDDEPO : Depodaki Altın Miktarını Bildirir.\n- ENV : Envanterin boş yuva sayısını bildirir.\n- DEPO : Depodaki boş yuva sayısını bildirir.\n- JOBINFO : JOB Nick, Job Seviye, JOB Tipi Ve JOB Exp miktarını bildirir.\n- JOBBOX : Meslek çantasındaki doluluğu bildirir.(Uzmanlik)\n- SOX : Sox Miktarını Bildirir.(Giyilmişler ve Job Setler Haric)') #
 
 def btnelixir_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- INCELX : Incomplete Intensifying Elixir miktarını bildirir.\n- 8ELX : Lv.8 Intensifying Elixir miktarını bildirir.\n- 9ELX : Lv.9 Intensifying Elixir miktarını bildirir.\n- 10ELX : Lv.10 Intensifying Elixir miktarını bildirir.\n- 11ELX : Lv.11 Intensifying Elixir miktarını bildirir.\n- ENH12 : 12th Grade Enhancer miktarını bildirir.\n- ENH13 : 13th Grade Enhancer miktarını bildirir.\n- ENH14 : 14th Grade Enhancer miktarını bildirir.\n- ENH15 : 15th Grade Enhancer miktarını bildirir.\n- ENH16 : 16th Grade Enhancer miktarını bildirir.\n- ENH17 : 17th Grade Enhancer miktarını bildirir.')
+    QtBind.append(gui,lstInfo,'- INCELX : Incomplete Intensifying Elixir miktarını bildirir.\n- 8ELX : Lv.8 Intensifying Elixir miktarını bildirir.\n- 9ELX : Lv.9 Intensifying Elixir miktarını bildirir.\n- 10ELX : Lv.10 Intensifying Elixir miktarını bildirir.\n- 11ELX : Lv.11 Intensifying Elixir miktarını bildirir.\n- ENH12 : 12th Grade Enhancer miktarını bildirir.\n- ENH13 : 13th Grade Enhancer miktarını bildirir.\n- ENH14 : 14th Grade Enhancer miktarını bildirir.\n- ENH15 : 15th Grade Enhancer miktarını bildirir.\n- ENH16 : 16th Grade Enhancer miktarını bildirir.\n- ENH17 : 17th Grade Enhancer miktarını bildirir.')
 
 def btnevent_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- FLOWER : Tüm ciceklerin miktarını bildirir.\n- ZERK : Berserker Regeneration Potion miktarını bildirir.\n- PANDORA : Pandora Box miktarını bildirir.\n- MONSTER : Monster Summon Scroll Miktarını Bildirir.\n- CATA : Alchemy Catalyst miktarını bildirir.\n- ICE : Dondurma miktarını bildirir.\n- LUCKYBOX : Lucky Box miktarını bildirir.\n- PLEDGE : Pledge Sag ve Sol miktarını bildirir.\n- ALIBABA : AliBaba Seal miktarını bildirir.\n- RUBBER : Rubber Piece miktarını bildirir.\n- THANKS : Thanks event Harf miktarını bildirir.\n- FLAKE : Snow Flake miktarını bildirir.\n- HALLOWEN : Halloween Caddy miktarını bildirir.')
+    QtBind.append(gui,lstInfo,'- FLOWER : Tüm ciceklerin miktarını bildirir.\n- ZERK : Berserker Regeneration Potion miktarını bildirir.\n- PANDORA : Pandora Box miktarını bildirir.\n- MONSTER : Monster Summon Scroll Miktarını Bildirir.\n- CATA : Alchemy Catalyst miktarını bildirir.\n- ICE : Dondurma miktarını bildirir.\n- LUCKYBOX : Lucky Box miktarını bildirir.\n- PLEDGE : Pledge Sag ve Sol miktarını bildirir.\n- ALIBABA : AliBaba Seal miktarını bildirir.\n- RUBBER : Rubber Piece miktarını bildirir.\n- THANKS : Thanks event Harf miktarını bildirir.\n- FLAKE : Snow Flake miktarını bildirir.\n- HALLOWEN : Halloween Caddy miktarını bildirir.')
 
 def btncoin_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- COIN : Envanterdeki Gold/Silver/Iron/Copper/Arena Coin miktarını bildirir.\n- COMBATI : Coin of Combativeness (Party) ve Coin of Combativeness (Individual)\nMiktarını bildirir.\n- TOKEN1 : Monk\'s Token miktarını bildirir.\n- TOKEN2 : Soldier\'s Token miktarını bildirir.\n- TOKEN3 : General\'s Token miktarını bildirir.')
+    QtBind.append(gui,lstInfo,'- COIN : Envanterdeki Gold/Silver/Iron/Copper/Arena Coin miktarını bildirir.\n- COMBATI : Coin of Combativeness (Party) ve Coin of Combativeness (Individual)\nMiktarını bildirir.\n- TOKEN1 : Monk\'s Token miktarını bildirir.\n- TOKEN2 : Soldier\'s Token miktarını bildirir.\n- TOKEN3 : General\'s Token miktarını bildirir.')
 
 def btnstone_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- 8BLUE : 8DG Blue Stonelerin Miktarını bildirir.\n- 8BLUE2 : 8DG Blue Stonelerin Miktarını bildirir.\n- 9BLUE : 9DG Blue Stonelerin Miktarını bildirir.\n- 9BLUE2 : 9DG Blue Stonelerin Miktarını bildirir.\n- 10BLUE : 10DG Blue Stonelerin Miktarını bildirir.\n- 10BLUE2 : 10DG Blue Stonelerin Miktarını bildirir.\n- 11BLUE : 11DG Blue Stonelerin Miktarını bildirir.\n- 11BLUE2 : 11DG Blue Stonelerin Miktarını bildirir.\n- 8STAT : 8DG Stat Stonelerin Miktarını bildirir.\n- 8STAT2 : 8DG Stat Stonelerin Miktarını bildirir.\n- 9STAT : 9DG Stat Stonelerin Miktarını bildirir.\n- 9STAT2 : 9DG Stat Stonelerin Miktarını bildirir.\n- 10STAT : 10DG Stat Stonelerin Miktarını bildirir.')
+    QtBind.append(gui,lstInfo,'- 8BLUE : 8DG Blue Stonelerin Miktarını bildirir.\n- 8BLUE2 : 8DG Blue Stonelerin Miktarını bildirir.\n- 9BLUE : 9DG Blue Stonelerin Miktarını bildirir.\n- 9BLUE2 : 9DG Blue Stonelerin Miktarını bildirir.\n- 10BLUE : 10DG Blue Stonelerin Miktarını bildirir.\n- 10BLUE2 : 10DG Blue Stonelerin Miktarını bildirir.\n- 11BLUE : 11DG Blue Stonelerin Miktarını bildirir.\n- 11BLUE2 : 11DG Blue Stonelerin Miktarını bildirir.\n- 8STAT : 8DG Stat Stonelerin Miktarını bildirir.\n- 8STAT2 : 8DG Stat Stonelerin Miktarını bildirir.\n- 9STAT : 9DG Stat Stonelerin Miktarını bildirir.\n- 9STAT2 : 9DG Stat Stonelerin Miktarını bildirir.\n- 10STAT : 10DG Stat Stonelerin Miktarını bildirir.')
     QtBind.append(gui,lstInfo,'- 10STAT2 : 10DG Stat Stonelerin Miktarını bildirir.\n- 11STAT : 11DG Stat Stonelerin Miktarını bildirir.\n- 11STAT2 : 11DG Stat Stonelerin Miktarını bildirir.\n- 8LUCK : 8DG Luck Stonelerin Miktarını bildirir.\n- 9LUCK : 9DG Luck Stonelerin Miktarını bildirir.\n- 10LUCK : 10DG Luck Stonelerin Miktarını bildirir.\n- 11LUCK : 11DG Luck Stonelerin Miktarını bildirir.\n- 8STEADY : 8DG Steady Stonelerin Miktarını bildirir.\n- 9STEADY : 9DG Steady Stonelerin Miktarını bildirir.\n- 10STEADY : 10DG Steady Stonelerin Miktarını bildirir.\n- 11STEADY : 11DG Steady Stonelerin Miktarını bildirir.')
 
 def btnfgw_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- 8FGW1 : (8DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 8FGW2 : (8DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 9FGW1 : (9DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 9FGW2 : (9DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 10FGW1 : (10DG MOON) Kolay Düşen Kartların miktarını bildirir.\n- 10FGW2 : (10DG MOON) Zor Düşen Kartların miktarını bildirir.\n- 11FGW1 : (11DG EGYPY A) Kolay Düşen Kartların miktarını bildirir.\n- 11FGW2 : (11DG EGPTY A) Zor Düşen Kartların miktarını bildirir.\n- FADED : Faded Bead Miktarını Bildirir.')
+    QtBind.append(gui,lstInfo,'- 8FGW1 : (8DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 8FGW2 : (8DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 9FGW1 : (9DG SUN) Kolay Düşen Kartların miktarını bildirir.\n- 9FGW2 : (9DG SUN) Zor Düşen Kartların miktarını bildirir.\n- 10FGW1 : (10DG MOON) Kolay Düşen Kartların miktarını bildirir.\n- 10FGW2 : (10DG MOON) Zor Düşen Kartların miktarını bildirir.\n- 11FGW1 : (11DG EGYPY A) Kolay Düşen Kartların miktarını bildirir.\n- 11FGW2 : (11DG EGPTY A) Zor Düşen Kartların miktarını bildirir.\n- FADED : Faded Bead Miktarını Bildirir.\n- PETSTR : Fellow Pet için Increase Strength Miktarını Bildirir.\n- PETINT : Fellow Pet için Increase Intelligence Miktarını Bildirir.')
 
 def btnegpty_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- SETA : Egpty A Grade Eşya Miktarını Bildirir.(Giyilmişler Haric)\n Sadece Drop Sayısını bildirir.(Silah - Kıyafet - Kalkan - Yüzük) \n- SETB : Egpty B Grade Eşya Miktarını Bildirir.(Giyilmişler Haric)\n Sadece Drop Sayısını bildirir.(Silah - Kıyafet - Kalkan - Yüzük)')
+    QtBind.append(gui,lstInfo,'- SETA : Egpty A Grade Eşya Miktarını Bildirir.(Giyilmişler Haric)\n Sadece Drop Sayısını bildirir.(Silah - Kıyafet - Kalkan - Yüzük) \n- SETB : Egpty B Grade Eşya Miktarını Bildirir.(Giyilmişler Haric)\n Sadece Drop Sayısını bildirir.(Silah - Kıyafet - Kalkan - Yüzük)')
 
 def btnstall_clicked():
     QtBind.clear(gui,lstInfo)
-    QtBind.append(gui,lstInfo,'      "Verilen Komutlar Envanter, Pet, Depo ve Guild Depo\'nuzu Kontrol Etmektedir."\n       NOT : Depo ve Guild Depo eşyaları 1 defa girişten sonra sayılacaktır.\n \n- GLOBALSC : Global chatting Miktarını Bildiri.\n- REVSC : Reverse Return Scroll Miktarını Bildirir.\n- CLOCKSC : Clock of Reincarnation Miktarını Bildirir.\n- DEVILSC : Extension gear Miktarını Bildirir.\n- PREPLUS : Premium Gold Time PLUS Miktarını Bildirir.\n- HAMMER : Repair Hammer Miktarını Bildirir.\n- ASTRAL : Magic stone of Astral Miktarını Bildirir.\n- IMMORTAL : Magic stone of immortal Miktarını Bildirir.\n- ENVANTERSC : Inventory expansion item miktarını bildirir.\n- STORAGESC : Storage expansion item miktarını bildirir.\n- JOBBLUE : Sealed Magic Rune miktarını belirtir.\n- JOBARTI : Sealed Reinforcement Rune miktarını belirler.')
+    QtBind.append(gui,lstInfo,'- GLOBALSC : Global chatting Miktarını Bildiri.\n- REVSC : Reverse Return Scroll Miktarını Bildirir.\n- CLOCKSC : Clock of Reincarnation Miktarını Bildirir.\n- DEVILSC : Extension gear Miktarını Bildirir.\n- PREPLUS : Premium Gold Time PLUS Miktarını Bildirir.\n- HAMMER : Repair Hammer Miktarını Bildirir.\n- ASTRAL : Magic stone of Astral Miktarını Bildirir.\n- IMMORTAL : Magic stone of immortal Miktarını Bildirir.\n- ENVANTERSC : Inventory expansion item miktarını bildirir.\n- STORAGESC : Storage expansion item miktarını bildirir.\n- JOBBLUE : Sealed Magic Rune miktarını belirtir.\n- JOBARTI : Sealed Reinforcement Rune miktarını belirler.')
 
 def btnClearInfo_clicked():
     QtBind.clear(gui, lstInfo)
@@ -262,45 +270,54 @@ def btnSaveChatSettings_clicked():
     log('TR_InventoryCounter: Sohbet kanalı ayarları kaydedildi.')
 
 def send_response(command_sender, message):
-    global selected_chat_channel, target_private_name
+    global selected_chat_channel
     channel = selected_chat_channel
+    log_prefix = "TR_InventoryCounter:"
+
     try:
         if channel == "All":
             phBotChat.All(message)
+
         elif channel == "Party":
             if get_party():
-                 phBotChat.Party(message)
+                phBotChat.Party(message)
             else:
-                 phBotChat.Private(command_sender, f"(Party\de degilsin) {message}")
-                 log("TR_InventoryCounter: Party aktif degil, yanit özel olarak gönderildi.")
+                phBotChat.Private(command_sender, f"(Partide degil >) {message}")
+                log(f"{log_prefix} Parti yok, özel gönderildi.")
+
         elif channel == "Guild":
-             if get_character_data().get('guild'):
-                 phBotChat.Guild(message)
-             else:
-                 phBotChat.Private(command_sender, f"(Guild\de degilsin) {message}")
-                 log("TR_InventoryCounter: Guild aktif degil, yanit özel olarak gönderildi.")
+            if get_guild():
+                phBotChat.Guild(message)
+            else:
+                phBotChat.Private(command_sender, f"(Guildde degil) {message}")
+                log(f"{log_prefix} Guild yok, özel gönderildi.")
+
         elif channel == "Union":
-              if get_character_data().get('guild'):
-                  phBotChat.Union(message)
-              else:
-                  phBotChat.Private(command_sender, f"(Union/Guild \de degilsin) {message}")
-                  log("TR_InventoryCounter: Union/Guild aktif değil, yanıt özel olarak gönderildi.")
+            if get_guild():
+                phBotChat.Union(message)
+            else:
+                phBotChat.Private(command_sender, f"(Guildde degil) {message}")
+                log(f"{log_prefix} Guild yok, özel gönderildi.")
+
         elif channel == "PrivateSender":
             phBotChat.Private(command_sender, message)
+
         elif channel == "PrivateTarget":
-            current_target_name = QtBind.text(gui, tbxTargetPrivate)
-            if current_target_name:
-                 phBotChat.Private(current_target_name, message)
+            target_name = QtBind.text(gui, tbxTargetPrivate)
+            if target_name:
+                phBotChat.Private(target_name, message)
             else:
-                 phBotChat.Private(command_sender, "(Hedef karakter adi belirtilmemis!)")
-                 log("TR_InventoryCounter: Hedef Özel seçili ancak hedef adı boş.")
+                phBotChat.Private(command_sender, "(Hedef bos!)")
+                log(f"{log_prefix} Hedef boş, gönderene özel gönderildi.")
+
         else:
+            log(f"{log_prefix} Bilinmeyen kanal '{channel}', özel gönderiliyor.")
             phBotChat.Private(command_sender, message)
-            log(f"TR_InventoryCounter: Bilinmeyen kanal ayarı '{channel}', yanıt özel olarak gönderildi.")
+
     except Exception as e:
-        log(f"TR_InventoryCounter: Yanıt gönderilirken hata ({channel}): {e}")
+        log(f"{log_prefix} Send ERROR (Kanal: {channel}): {e}")
         try:
-            phBotChat.Private(command_sender, f"(Gönderim hatası) {message}")
+            phBotChat.Private(command_sender, f"(Hata!) {message}")
         except:
             pass
 
@@ -335,7 +352,8 @@ def checkInv(arg, player):
     card17 = card18 = card19 = card20 = card21 = card22 = card23 = card24 = 0
     card25 = card26 = card27 = card28 = card29 = card30 = card31 = card32 = 0
     faded = 0
-    sunItems = aGrade = bGrade = 0
+    petstr = petint = 0
+    aGrade = bGrade = 0
     chatglobal = chatglobalvip = reversesc = clocksc = devilres = preplus = repairhammer = inventorysc = storagesc = 0
     jobblue = jobartı = 0
     token1 = token2 = token3 = 0
@@ -343,23 +361,19 @@ def checkInv(arg, player):
     inventory = get_inventory()
     storage = get_storage()
     pets = get_pets()
-    guild_storage = get_guild_storage()
     inventory_items = []
     storage_items = []
     pet_items = []
-    guild_storage_items = []
     if inventory and 'items' in inventory:
         inventory_items = inventory['items'][13:]
     if storage and 'items' in storage:
         storage_items = storage['items']
-    if guild_storage and 'items' in guild_storage:
-        guild_storage_items = guild_storage['items']
     if pets:
         for p in pets.keys():
             pet = pets[p]
             if pet['type'] in 'pick':
                 pet_items.extend(pet.get('items', []))
-    all_items = inventory_items + storage_items + pet_items + guild_storage_items
+    all_items = inventory_items + storage_items + pet_items
     if all_items:
         for item in all_items:
             if item is not None:
@@ -822,8 +836,6 @@ def checkInv(arg, player):
                         card32 += item['quantity']
                     if "ITEM_ETC_SKILLPOINT_STONE" in item['servername']:
                         faded += item['quantity']
-                    if 'RARE' in item['servername'] and 'EVENT' not in item['servername'] and 'ARCHEMY' not in item['servername'] and 'ITEM_TRADE' not in item['servername']:
-                        sunItems += 1
                     if 'SET_A_RARE' in item['servername']:
                         aGrade += 1
                     if 'SET_B_RARE' in item['servername']:
@@ -842,21 +854,21 @@ def checkInv(arg, player):
                         preplus += item['quantity']
                     if "ITEM_MALL_REPAIR_HAMMER" in item['servername'] or "ITEM_EVENT_REPAIR_HAMMER" in item['servername'] or "ITEM_EVENT_REPAIR_HAMMER_SUPPORT" in item['servername']:
                         repairhammer += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ASTRAL_8" in item['servername']:
+                    if "Magic stone of Astral" in item['name'] and "(Lvl.08)" in item['name']:
                         astral8 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ASTRAL_9" in item['servername']:
+                    if "Magic stone of Astral" in item['name'] and "(Lvl.09)" in item['name']:
                         astral9 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ASTRAL_10" in item['servername']:
+                    if "Magic stone of Astral" in item['name'] and "(Lvl.10)" in item['name']:
                         astral10 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ASTRAL_11" in item['servername']:
+                    if "Magic stone of Astral" in item['name'] and "(Lvl.11)" in item['name']:
                         astral11 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ATHANASIA_8" in item['servername']:
+                    if "Magic stone of immortal" in item['name'] and "(Lvl.08)" in item['name']:
                         immortal8 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ATHANASIA_9" in item['servername']:
+                    if "Magic stone of immortal" in item['name'] and "(Lvl.09)" in item['name']:
                         immortal9 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ATHANASIA_10" in item['servername']:
+                    if "Magic stone of immortal" in item['name'] and "(Lvl.10)" in item['name']:
                         immortal10 += item['quantity']
-                    if "ITEM_ETC_ARCHEMY_MAGICTABLET_ATHANASIA_11" in item['servername']:
+                    if "Magic stone of immortal" in item['name'] and "(Lvl.11)" in item['name']:
                         immortal11 += item['quantity']
                     if "ITEM_MALL_INVENTORY_ADDITION" in item['servername'] or "ITEM_EVENT_INVENTORY_ADDITION" in item['servername']:
                         inventorysc += item['quantity']
@@ -872,6 +884,10 @@ def checkInv(arg, player):
                         token2 += item['quantity']
                     if "ITEM_ETC_LEVEL_TOKEN_03" in item['servername']:
                         token3 += item['quantity']
+                    if "Increase Strength" in item['name'] or "Gücü Arttır" in item['name']:
+                        petstr += item['quantity']
+                    if "Increase Intelligence" in item['name'] or "Zekayı Arttır" in item['name']:
+                        petint += item['quantity']
 
     if arg == "ElixirInc":
         send_response(player,f"Incomplete Weapon {weapon5} , Incomplete Armor {protector5} , Incomplete Shield {shield5} , Incomplete Accessory {accessory5}")
@@ -993,8 +1009,6 @@ def checkInv(arg, player):
         send_response(player,f"Sereness’s tears {card31} , Commander’s patch {card32}")
     if arg == "faded":
         send_response(player,f"Faded Bead {faded}")
-    if arg == "Sox":
-        send_response(player, f"{sunItems} Parca SoX Esyasi")
     if arg == "SetA":
         send_response(player, f"{aGrade} Parca Egpty A Esyasi")
     if arg == "SetB":
@@ -1031,6 +1045,45 @@ def checkInv(arg, player):
         send_response(player,f"Soldier's Token {token2}")
     if arg == "token3":
         send_response(player,f"General's Token {token3}")
+    if arg == "petstr":
+        send_response(player,f"Increase Strength {petstr}")
+    if arg == "petint":
+        send_response(player,f"Increase Intelligence {petint}")
+
+def get_sox_counts():
+    sox_inventory = 0
+    sox_pet = 0
+    sox_storage = 0
+
+    def is_sox(item):
+        if item and 'servername' in item:
+            sn = item['servername']
+            return 'RARE' in sn and 'EVENT' not in sn and 'ARCHEMY' not in sn and 'ITEM_TRADE' not in sn
+        return False
+
+    inventory = get_inventory()
+    if inventory and 'items' in inventory:
+        inventory_items = inventory['items'][13:]
+        for item in inventory_items:
+            if is_sox(item):
+                sox_inventory += 1
+
+    pets = get_pets()
+    if pets:
+        for p_info in pets.values():
+            if p_info.get('type') == 'pick' and 'items' in p_info:
+                 for item in p_info['items']:
+                     if is_sox(item):
+                         sox_pet += 1
+
+    storage = get_storage()
+    if storage and 'items' in storage:
+        storage_items = storage['items']
+        for item in storage_items:
+            if is_sox(item):
+                sox_storage += 1
+
+    return sox_inventory, sox_pet, sox_storage
 
 def handle_chat(t, player, msg):
     if player and lstLeaders_exist(player) or t == 100:
@@ -1059,7 +1112,6 @@ def handle_chat(t, player, msg):
                     log("Hata (ENV): Envanter bilgisi alinamadi veya format hatali.")
                     send_response(player, "Envanter bilgisi alinamadi.")
             except Exception as e:
-                import traceback
                 log(f"Hata (ENV): Komut islenirken bir istisna olustu: {e}\n{traceback.format_exc()}")
                 send_response(player, "ENV komutu islenirken bir hata olustu.")
 
@@ -1086,7 +1138,6 @@ def handle_chat(t, player, msg):
                     log("Hata (DEPO): Depo bilgisi alinamadi veya format hatali.")
                     send_response(player, "Depo bilgisi alinamadi.")
             except Exception as e:
-                import traceback
                 log(f"Hata (DEPO): Komut islenirken bir istisna olustu: {e}\n{traceback.format_exc()}")
                 send_response(player, "DEPO komutu islenirken bir hata olustu.")
 
@@ -1137,12 +1188,42 @@ def handle_chat(t, player, msg):
                 if chars and 'gold' in chars:
                     gold = chars['gold']
                     goldS = f"{gold:,}"
-                    send_response(player, f"Suan {goldS} Altin var.")
+                    send_response(player, f"Envanterde {goldS} Altin var.") # Açıklama güncellendi
                 else:
-                    send_response(player, "Altin bilgisi alinamadi.")
+                    send_response(player, "Envanter Altin bilgisi alinamadi.")
             except Exception as e:
                 log(f"Hata (GOLD): {e}")
                 send_response(player, "GOLD komutu islenirken hata olustu.")
+        
+        elif msg == "GOLDGUILD":
+            try:
+                guild_storage_data = get_guild_storage()
+                if guild_storage_data and 'gold' in guild_storage_data:
+                    gold = guild_storage_data['gold']
+                    goldS = f"{gold:,}"
+                    send_response(player, f"Guild Deposunda {goldS} Altin var.")
+                elif guild_storage_data is None:
+                     send_response(player, "Guild Deposu bilgisi alinamadi (Muhtemelen depoya henüz erisilmedi).")
+                else:
+                    send_response(player, "Guild Deposu Altin bilgisi alinamadi (Veri formatı beklenenden farklı olabilir).")
+            except Exception as e:
+                log(f"Hata (GOLDG): Komut islenirken bir istisna olustu: {e}\n{traceback.format_exc()}")
+                send_response(player, "GOLDGUILD komutu islenirken bir hata olustu.")
+
+        elif msg == "GOLDDEPO":
+            try:
+                storage_data = get_storage()
+                if storage_data and 'gold' in storage_data:
+                    gold = storage_data['gold']
+                    goldS = f"{gold:,}"
+                    send_response(player, f"Depoda {goldS} Altin var.")
+                elif storage_data is None:
+                     send_response(player, "Depo bilgisi alinamadi (Muhtemelen depoya henüz erisilmedi).")
+                else:
+                    send_response(player, "Depo Altin bilgisi alinamadi (Veri formatı beklenenden farklı olabilir).")
+            except Exception as e:
+                log(f"Hata (GOLDD): Komut islenirken bir istisna olustu: {e}\n{traceback.format_exc()}")
+                send_response(player, "GOLDDEPO komutu islenirken bir hata olustu.")
 
         elif msg == "JOBBOX":
             try:
@@ -1177,6 +1258,15 @@ def handle_chat(t, player, msg):
             except Exception as e:
                 log(f"Hata (SP): {e}")
                 send_response(player, "SP komutu islenirken hata olustu.")
+
+        elif msg == "SOX":
+            try:
+                inv_count, pet_count, storage_count = get_sox_counts()
+                response_message = f"Envanter > ( {inv_count} ) , Pet > ( {pet_count} ) , Depo > ( {storage_count} )"
+                send_response(player, response_message)
+            except Exception as e:
+                log(f"Hata (SOX): Komut islenirken bir istisna olustu: {e}\n{traceback.format_exc()}")
+                send_response(player, "SOX komutu islenirken bir hata olustu.")
 
         elif msg == "INCELX": checkInv("ElixirInc", player)
         elif msg == "8ELX": checkInv("Elixir8", player)
@@ -1226,7 +1316,6 @@ def handle_chat(t, player, msg):
         elif msg == "HALLOWEN": checkInv("halloweencandyy", player)
         elif msg == "ZERK": checkInv("Zerk", player)
         elif msg == "LAMP": checkInv("Lamp", player)
-        elif msg == "SOX": checkInv("Sox", player)
         elif msg == "COIN": checkInv("Coin", player)
         elif msg == "COMBATI": checkInv("Combatii", player)
         elif msg == "CATA": checkInv("Catalyst", player)
@@ -1257,11 +1346,13 @@ def handle_chat(t, player, msg):
         elif msg == "TOKEN1": checkInv("token1", player)
         elif msg == "TOKEN2": checkInv("token2", player)
         elif msg == "TOKEN3": checkInv("token3", player)
+        elif msg == "PETSTR": checkInv("petstr", player)
+        elif msg == "PETINT": checkInv("petint", player)
 
 def GetPluginsFolder():
     return os.path.dirname(os.path.realpath(__file__))
 
-log(f'Eklenti: {name} v{version} başarıyla yüklendi.')
+log(f'Eklenti: {name} başarıyla yüklendi.')
 
 config_path = getPath()
 if os.path.exists(config_path):

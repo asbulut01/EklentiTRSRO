@@ -7,7 +7,6 @@ import os
 import json
 
 name = 'TR_CarnivalBalloon'
-version = '2.1'
 
 INFLATE_BALLOON_LEVEL_STOP = 6
 INFLATE_BALLOON_LEVELUP_DELAY = 5.0
@@ -87,7 +86,7 @@ def load_config():
 
 def return_scroll_changed(checked):
     state = 'Evet' if checked else 'Hayır'
-    log(f'Eklenti: Return Çekme Durumu -> {state}')
+    log(f'TR_CarnivalBalloon: Return Çekme Durumu -> {state}')
     save_config()
 
 def btnSetSpeed_clicked():
@@ -96,12 +95,12 @@ def btnSetSpeed_clicked():
         new_speed = float(QtBind.text(gui, txtSpeed))
         if new_speed > 0:
             INFLATE_BALLOON_LEVELUP_DELAY = new_speed
-            log(f'Eklenti: Balon uçurma hızı {new_speed} saniye olarak ayarlandı.')
+            log(f'TR_CarnivalBalloon: Balon uçurma hızı {new_speed} saniye olarak ayarlandı.')
             save_config()
         else:
-            log('Eklenti: Hız 0\'dan büyük olmalıdır.')
+            log('TR_CarnivalBalloon: Hız 0\'dan büyük olmalıdır.')
     except ValueError:
-        log('Eklenti: Geçerli bir hız değeri giriniz.')
+        log('TR_CarnivalBalloon: Geçerli bir hız değeri giriniz.')
 
 def btnSetLevel_clicked():
     global INFLATE_BALLOON_LEVEL_STOP
@@ -111,25 +110,29 @@ def btnSetLevel_clicked():
         if 1 <= new_level <= 6:
             INFLATE_BALLOON_LEVEL_STOP = new_level
             QtBind.setText(gui, lblLevel, ' Mevcut Seviye: ' + str(INFLATE_BALLOON_LEVEL_STOP))
-            log(f'Eklenti: Seviyeyi {INFLATE_BALLOON_LEVEL_STOP} olarak ayarladınız.')
+            log(f'TR_CarnivalBalloon: Seviyeyi {INFLATE_BALLOON_LEVEL_STOP} olarak ayarladınız.')
             save_config()
         else:
-            log('Eklenti: Seviye 1 ile 6 arasında olmalıdır.')
+            log('TR_CarnivalBalloon: Seviye 1 ile 6 arasında olmalıdır.')
     except ValueError:
-        log('Eklenti: Geçerli bir seviye değeri giriniz.')
+        log('TR_CarnivalBalloon: Geçerli bir seviye değeri giriniz.')
 
 def joined_game():
     Timer(2.0, load_config).start()
 
-# Diğer mevcut fonksiyonlar ve eklenti işlevleri burada korunuyor.
-
 def GetItemByExpression(_lambda):
-    items = get_inventory()['items']
-    for slot, item in enumerate(items):
-        if item:
-            if _lambda(item['name'], item['servername']):
-                item['slot'] = slot
-                return item
+    inventory_data = get_inventory()
+    if not inventory_data or 'items' not in inventory_data: 
+        log('TR_CarnivalBalloon: Envanter bilgisi alınamadı (Oyunda olunmadığı için olabilir).')
+        return None
+    
+    items = inventory_data['items']
+    if items: 
+        for slot, item in enumerate(items):
+            if item and isinstance(item, dict) and 'name' in item and 'servername' in item:
+                if _lambda(item['name'], item['servername']):
+                    item['slot'] = slot
+                    return item
     return None
 
 def InflateNewBalloon():
@@ -139,28 +142,28 @@ def InflateNewBalloon():
         inflatingLevel = 1
         p = struct.pack('B', item['slot'])
         p += b'\x30\x0C\x09\x00'
-        log('Eklenti: Using "' + item['name'] + '"...')
+        log('TR_CarnivalBalloon: Using "' + item['name'] + '"...')
         inject_joymax(0x704C, p, True)
         Timer(INFLATE_BALLOON_LEVELUP_DELAY, LevelUpBalloon).start()
     else:
         global isInflating
         isInflating = False
-        log('Eklenti: Balon Bulunamadı, Return Çekiliyor...')
+        log('TR_CarnivalBalloon: Balon Bulunamadı, Return Çekiliyor...')
         if QtBind.isChecked(gui, chkReturn):
             use_return_scroll()
         else:
-            log('Eklenti: Return Çekme devre dışı bırakıldı.')
+            log('TR_CarnivalBalloon: Return Çekme devre dışı bırakıldı.')
         start_bot()
 
 def LevelUpBalloon():
     global inflatingLevel
     if inflatingLevel >= INFLATE_BALLOON_LEVEL_STOP:
-        log('Eklenti: Balon Ödülünü Alındı. (Lv.' + str(inflatingLevel) + ')')
+        log('TR_CarnivalBalloon: Balon Ödülünü Alındı. (Lv.' + str(inflatingLevel) + ')')
         inject_joymax(0x7574, b'\x02', False)
         inflatingLevel = 0
         Timer(INFLATE_BALLOON_LEVELUP_DELAY, LevelUpBalloon).start()
     elif inflatingLevel:
-        log('Eklenti: Balon Şişiriliyor...')
+        log('TR_CarnivalBalloon: Balon Şişiriliyor...')
         inject_joymax(0x7574, b'\x01', False)
         Timer(INFLATE_BALLOON_LEVELUP_DELAY, LevelUpBalloon).start()
     else:
@@ -177,10 +180,10 @@ def inflate_balloons(args):
         stop_bot()
         global isInflating
         isInflating = True
-        log('Eklenti: Balonlar Şişirilmeye Başlandı...')
+        log('TR_CarnivalBalloon: Balonlar Şişirilmeye Başlandı...')
         Timer(0.001, InflateNewBalloon).start()
     else:
-        log('Eklenti: Envanterinizde Balon Bulunmuyor.')
+        log('TR_CarnivalBalloon: Envanterinizde Balon Bulunmuyor.')
     return 0
 
 def handle_joymax(opcode, data):
@@ -193,4 +196,4 @@ def handle_joymax(opcode, data):
                 inflatingLevel = 0
     return True
 
-log('Eklenti: %s v%s Yuklendi. // edit by hakankahya' % (name, version))
+log(f'Eklenti: {name} başarıyla yüklendi.')

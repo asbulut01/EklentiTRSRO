@@ -6,10 +6,10 @@ import time
 import json
 import os
 import struct
+import logging
 from threading import Timer
 
 pName = 'TR_ConsigmentHelper'
-pVersion = '2.0'
 
 gui = QtBind.init(__name__,pName)
 lsthunterstatus = []
@@ -334,9 +334,10 @@ def handle_joymax(opcode, data):
 	return True
 
 def event_loop():
-		date
+    now_time = datetime.now().strftime('%H:%M:%S')
+    pass
 
-log('Eklenti: '+pName+' v'+pVersion+' Yuklendi. // edit by hakankahya')
+log('Eklenti: '+pName+' başarıyla yüklendi.')
 
 if os.path.exists(getPath()):
 	loadConfigs()

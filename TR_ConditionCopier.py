@@ -4,20 +4,21 @@ import json
 import os
 
 name = 'TR_ConditionCopier'
-version = 2.1
+
 path = get_config_dir()
 
 gui = QtBind.init(__name__, name)
 
 lblCharName = QtBind.createLabel(gui,'Karakter Adı',85,20)
-lblCharFrom = QtBind.createLabel(gui,'Kopyala Kaynak',20,50)
+lblCharFrom = QtBind.createLabel(gui,'Kaynak',20,50)
 txtCharFrom = QtBind.createLineEdit(gui,"",75,48,120,20)
-lblCharTo = QtBind.createLabel(gui,'Kopyala Hedef',20,80)
+lblCharTo = QtBind.createLabel(gui,'Hedef',20,80)
 txtCharTo = QtBind.createLineEdit(gui,"",75,78,120,20)
 
 lblServerName = QtBind.createLabel(gui,'Sunucu Adı',240,20)
 txtServerFrom = QtBind.createLineEdit(gui,"",220,48,120,20)
 txtServerTo = QtBind.createLineEdit(gui,"",220,78,120,20)
+
 
 lblProfileName = QtBind.createLabel(gui,'Profil Adı',390,20)
 txtProfileFrom = QtBind.createLineEdit(gui,"",370,48,120,20)
@@ -30,10 +31,10 @@ def button_copy():
 	FromServer = QtBind.text(gui,txtServerFrom)
 	FromProfile = QtBind.text(gui,txtProfileFrom)
 	if FromChar == '':
-		log('Eklenti: Lütfen KAYNAK karakter adını giriniz')
+		log('TR_ConditionCopier: Lütfen bir KAYNAK Karakter Adı Girin')
 		return
 	if FromServer == '':
-		log('Eklenti: Lütfen KAYNAK sunucu adını giriniz')
+		log('TR_ConditionCopier: Lütfen bir KAYNAK Sunucu Adı Girin')
 		return
 	FromFile = "%s_%s.json" %(FromServer,FromChar)
 	if len(FromProfile) > 0:
@@ -43,17 +44,17 @@ def button_copy():
 			Fromdata = json.load(f)
 			FromConditions = Fromdata['Conditions']
 	else:
-		log('Eklenti: KAYNAK yapılandırma dosyası mevcut değil')
+		log('TR_ConditionCopier: KAYNAK Config dosyası mevcut değil')
 		return
 
 	ToChar = QtBind.text(gui,txtCharTo)
 	ToServer = QtBind.text(gui,txtServerTo)
 	ToProfile = QtBind.text(gui,txtProfileTo)
 	if ToChar == '':
-		log('Eklenti: Lütfen HEDEF karakter adını giriniz')
+		log('TR_ConditionCopier: Lütfen bir HEDEF Karakter Adı Girin')
 		return
 	if ToServer == '':
-		log('Eklenti: Lütfen HEDEF sunucu adını giriniz')
+		log('TR_ConditionCopier: Lütfen bir HEDEF Sunucu Adı Girin')
 		return
 	ToFile = "%s_%s.json" %(ToServer,ToChar)
 	if len(ToProfile) > 0:
@@ -63,11 +64,11 @@ def button_copy():
 			Todata = json.load(f)
 			Todata['Conditions'] = FromConditions
 	else:
-		log('Eklenti: HEDEF yapılandırma dosyası mevcut değil')
+		log('TR_ConditionCopier: HEDEF Config dosyası mevcut değil')
 		return
 	log(str(FromConditions))
 	with open(path + ToFile ,"w", encoding = "utf-8") as f:
 		f.write(json.dumps(Todata, indent=4,))
-		log('Eklenti: Koşullar başarıyla [%s] konumundan [%s] konumuna kopyalandı' %(FromFile,ToFile))
+		log('TR_ConditionCopier: Koşullar [%s] dosyasından [%s] dosyasına başarıyla kopyalandı!' %(FromFile,ToFile))
 
-log('Eklenti: [%s] Sürüm %s Yüklendi. // edit by hakankahya' % (name,version))
+log(f'Eklenti: {name} başarıyla yüklendi.')

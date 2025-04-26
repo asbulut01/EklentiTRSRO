@@ -8,46 +8,42 @@ import re
 import urllib.request
 
 name = 'TR_AutoGacha'
-version = 2.1
 
 gui = QtBind.init(__name__, name)
-
 
 searchbar = QtBind.createLineEdit(gui,"",20,10,320,20)
 buttonsearch = QtBind.createButton(gui, 'buttonsearch_clicked', 'Ara', 350, 10)
 cbxpremium = QtBind.createCheckBox(gui, 'cbxpremium_clicked','Premium', 450, 10)
 cbxnormal = QtBind.createCheckBox(gui, 'cbxpremium_clicked','Normal', 520, 10)
 cbxall = QtBind.createCheckBox(gui, 'cbxallicked','Tümü', 590, 10)
-
 founditems = QtBind.createList(gui,20,50,690,210)
-
-buttonexchange = QtBind.createButton(gui, 'buttonexchange_clicked', 'Tümünü Takasla', 20, 280)
+buttonexchange = QtBind.createButton(gui, 'buttonexchange_clicked', 'Tümünü Takas Et', 20, 280)
 
 StopBot = False
 GachaItems = []
 
 def buttonsearch_clicked():
 	if not QtBind.isChecked(gui,cbxpremium) and not QtBind.isChecked(gui,cbxnormal) and not QtBind.isChecked(gui,cbxall):
-		log('Eklenti: Lütfen bir seçenek seçin, Premium/Normal ya da Tümü')
+		log('TR_AutoGacha: Lütfen bir Seçenek Belirleyin, Premium/Normal')
 		return
 	QtBind.clear(gui,founditems)
-	ItemIDs = GetTümüItemIDs()
-	AraText = QtBind.text(gui,searchbar)
+	ItemIDs = GetAllItemIDs()
+	SearchText = QtBind.text(gui,searchbar)
 	for itemid in ItemIDs:
 		ItemData = get_item(itemid)
 		ServerName = ItemData['servername']
-		Rarity = "(Magic)" if 'A_RARE' in ServerName else "(Rare)" if 'B_RARE' in ServerName else "(Legend)" if 'C_RARE' in ServerName else ""
+		Rarity = "(YILDIZ / SOX)" if 'A_RARE' in ServerName else "(AY / MOON)" if 'B_RARE' in ServerName else "(GÜNEŞ / SUN)" if 'C_RARE' in ServerName else ""
 		Name = ItemData['name']
-		if AraText.lower() in Name.lower():
+		if SearchText.lower() in Name.lower():
 			GachaData = GetGachaByItemID(itemid)
 			if QtBind.isChecked(gui,cbxpremium):
 				if "ITEM_EVENT" not in ServerName:
-					QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Name: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- ServerName: [{ServerName}]")
+					QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Eşya Adı: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- Eşya Kodu: [{ServerName}]")
 			if QtBind.isChecked(gui,cbxnormal):
 				if "ITEM_EVENT" in ServerName:
-					QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Name: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- ServerName: [{ServerName}]")
+					QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Eşya Adı: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- Eşya Kodu: [{ServerName}]")
 			if QtBind.isChecked(gui,cbxall):
-				QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Name: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- ServerName: [{ServerName}]")
+				QtBind.append(gui,founditems,f"{GachaData['gacha_id']} - Eşya Adı: [{Name} {Rarity}]{GetBlues(GachaData['param1'])} -- Eşya Kodu: [{ServerName}]")
 
 
 def buttonexchange_clicked():
@@ -60,7 +56,7 @@ def buttonexchange_clicked():
 	if SelectedItem:
 		GachaID = int(SelectedItem.split('-')[0].strip(' '))
 	else:
-		log('Eklenti: Lütfen bir ödül öğesi seçin')
+		log('TR_AutoGacha: Lütfen bir Ödül Öğesi Seçin')
 		return
 	Timer(0.1, ExchangeCards, [GachaID]).start() #avoid locking the bot & client
 
@@ -79,11 +75,11 @@ def HasWinner():
 		if item:
 			if "CARD_WIN" in item['servername']:
 				return True
-	return False	
+	return False
 
 def ExchangeCards(GachaID):
 	if HasWinner():
-		log('Eklenti: Kazanan bir kartınız var, takas yapılmayacak')
+		log('TR_AutoGacha: Kazanan Bir Kartınız Var, Takas Yapılmayacak')
 		if StopBot:
 			start_bot()
 		return
@@ -93,7 +89,7 @@ def ExchangeCards(GachaID):
 		if "GACHA" in npc['servername'] and "gori" not in npc['name'].lower():
 			CardSlots = GetCardSlots()
 			if len(CardSlots) == 0:
-				log('Eklenti: Hiç kartınız yok')
+				log('TR_AutoGacha: Hiç Kartınız Yok')
 				return
 			for slot in CardSlots:
 				p = struct.pack('<I', key)
@@ -103,16 +99,15 @@ def ExchangeCards(GachaID):
 				if get_locale() == 18:
 					p += b'\x00'
 				inject_joymax(0x7118, p, False)
-				log(f'Eklenti: Gacha Kartı Takas Ediliyor - slot[{slot}] için öğe [{ItemName}]')
+				log(f'TR_AutoGacha: Gacha Kartı Takas Ediliyor - yuva[{slot}] öğe için [{ItemName}]')
 				time.sleep(3.0)
 			if StopBot:
 				start_bot()
-			log('Eklenti: Tüm kartların takası tamamlandı')
+			log('TR_AutoGacha: Tüm kartlar takas edildi')
 			return
-	log('Eklenti: NPC bulunamadı. Gacha NPC\'sinin yakınında değilsiniz')
+	log('TR_AutoGacha: NPC bulunamadı. Bir Gacha NPC\'sinin yakınında değilsiniz')
 	return
 
-#ExchangeGacha,gachaid,true/false
 def ExchangeGacha(args):
 	global StopBot
 	GachaID = int(args[1])
@@ -128,7 +123,7 @@ def ExchangeGacha(args):
 	Timer(0.1, ExchangeCards, [GachaID]).start()
 	return 0
 
-def GetTümüItemIDs():
+def GetAllItemIDs():
 	global GachaItems
 	Items = []
 	if len(GachaItems) == 0:
@@ -153,7 +148,7 @@ def GetItemIDByGachaID(GachaID):
 	for item in GachaItems:
 		if item['gacha_id'] == int(GachaID):
 			return item['id']
-			
+
 def GetBlues(param1):
 	n = ""
 	if len(param1) != 0:
@@ -167,4 +162,4 @@ def GetBlues(param1):
 				n = n + (f"{Name}:{Value} ")
 	return f"-[{n.rstrip()}]" if len(n) > 0 else ""
 
-log('Eklenti: [%s] Sürüm %s Yüklendi. // edit by hakankahya' % (name,version))
+log(f'Eklenti: {name} başarıyla yüklendi.')

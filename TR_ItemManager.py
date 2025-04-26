@@ -8,7 +8,6 @@ import copy
 import re
 
 pName = 'TR_ItemManager'
-pVersion = '2.1'
 
 gui = QtBind.init(__name__, pName)
 lblCizgi1 = QtBind.createList(gui,10,10,200,250)
@@ -633,7 +632,6 @@ def sort_items(type):
     elif type == 'guild_storage':
         send_guild_storage_unlock()
         send_guild_storage_close()
-        # send_npc_unselect() # is done by the client itself
     stop_processing(True)
 
 def store_gold(type, amount):
@@ -668,13 +666,10 @@ def store_gold(type, amount):
     elif type == 'guild_storage':
         send_guild_storage_unlock()
         send_guild_storage_close()
-        # send_npc_unselect() # this is done by the client itself
     stop_processing(True)
 
 def take_gold(type, amount):
-    max_gold = 0  # todo: get storage/guild-storage gold amount
-    # if amount == 0 or amount > max_gold:
-    #    amount = max_gold
+    max_gold = 0
     if amount > 0:
         if type == 'storage':
             send_npc_select(type)
@@ -703,7 +698,6 @@ def take_gold(type, amount):
     elif type == 'guild_storage':
         send_guild_storage_unlock()
         send_guild_storage_close()
-        # send_npc_unselect() # this is done by the client itself
     stop_processing(True)
 
-log('Plugin:'+ pName +' v' + pVersion + ' Yuklendi. // edit by hakankahya')
+log('Eklenti: '+ pName +' başarıyla yüklendi.')

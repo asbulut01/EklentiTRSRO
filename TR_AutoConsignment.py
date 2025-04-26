@@ -9,7 +9,6 @@ import urllib.request
 import os
 
 name = 'TR_AutoConsignment'
-version = 2.1
 
 path = get_config_dir()[:-7]
 
@@ -24,35 +23,35 @@ Pagethread = None
 button1 = QtBind.createButton(gui, 'button_search', ' Ara ', 500, 32)
 lstItems = QtBind.createList(gui,10,62,580,200)
 
-lblBuy = QtBind.createLabel(gui,'Satın Alma Secenekleri',600,23)
-lblBuy = QtBind.createLabel(gui,'Öge Isimleri',600,40)
+lblBuy = QtBind.createLabel(gui,'Otomatik Satın Alma Ayarı',590,23)
+lblBuy = QtBind.createLabel(gui,'İtem İsimleri',600,40)
 txtAddItem = QtBind.createLineEdit(gui,"",600,55,120,20)
 lstBuyItems = QtBind.createList(gui,600,102,120,80)
-button1 = QtBind.createButton(gui, 'button_add', '                Ekle               ', 600, 77)
-button1 = QtBind.createButton(gui, 'button_remove', '                  Sil                ', 600, 182)
+button1 = QtBind.createButton(gui, 'button_add', '                Ekle               ', 600, 77)
+button1 = QtBind.createButton(gui, 'button_remove', '              Kaldır             ', 600, 182)
 
 
-lblBuy = QtBind.createLabel(gui,'Maksimum Fiyat',600,205)
+lblBuy = QtBind.createLabel(gui,'Max Fiyat',600,205)
 txtMaxPrice = QtBind.createLineEdit(gui,"0",600,218,120,20)
 
-lblBuy = QtBind.createLabel(gui,'Minimum Adet',600,238)
+lblBuy = QtBind.createLabel(gui,'Min. Miktar',600,238)
 txtQuantity = QtBind.createLineEdit(gui,"0",600,253,120,20)
 
-buttonStart = QtBind.createButton(gui, 'button_start', '               Baslat             ', 600, 280)
+buttonStart = QtBind.createButton(gui, 'button_start', '              Başlat              ', 600, 280)
 
 lblClass = QtBind.createLabel(gui,'Sınıf',10,10)
 ComboClass = QtBind.createCombobox(gui,10,32,150,22)
 
-lblType = QtBind.createLabel(gui,'Cinsi',170,10)
+lblType = QtBind.createLabel(gui,'Tip',170,10)
 ComboType = QtBind.createCombobox(gui,170,32,150,22)
 
-lblDegree = QtBind.createLabel(gui,'Degre',330,10)
+lblDegree = QtBind.createLabel(gui,'Derece',330,10)
 ComboDegree = QtBind.createCombobox(gui,330,32,150,22)
 
 def button_start():
 	global Started, PageIndex, ItemCount, NPCthread, Pagethread
 	if Started == 'Search':
-		log('Plugin: Şu anda Aranıyor... Lütfen bekleyin...')
+		log('TR_AutoConsignment: Şu anda aranıyor... Lütfen bekleyin...')
 		return
 	if not Started:
 		if NPCthread:
@@ -60,8 +59,9 @@ def button_start():
 		if Pagethread:
 			Pagethread.cancel()
 		Started = True
-		QtBind.setText(gui,buttonStart,'              Durdur              ')
+		QtBind.setText(gui,buttonStart,'               Durdur               ')
 		EnterConsignmentNPC()
+
 	elif Started:
 		if NPCthread:
 			NPCthread.cancel()
@@ -70,13 +70,13 @@ def button_start():
 		PageIndex = 0
 		ItemCount = 0
 		Started = False
-		QtBind.setText(gui,buttonStart,'               Baslat             ')
+		QtBind.setText(gui,buttonStart,'               Başlat               ')
 		Timer(1.0, ExitNPC, ()).start()
 
 def button_search():
 	global Started
 	if Started == 'Search':
-		log('Plugin: Currently Searching... Please Wait...')
+		log('TR_AutoConsignment: Şu anda aranıyor... Lütfen bekleyin...')
 		return
 	QtBind.clear(gui,lstItems)
 	Started = 'Search'
@@ -86,12 +86,12 @@ def button_add():
 	item = QtBind.text(gui,txtAddItem)
 	QtBind.append(gui,lstBuyItems,item)
 	QtBind.setText(gui, txtAddItem,"")
-	log('Eklenti: Öğe Eklendi [%s]' %item)
+	log('TR_AutoConsignment: İtem Eklendi [%s]' %item)
 
 def button_remove():
 	item = QtBind.text(gui,lstBuyItems)
 	QtBind.remove(gui,lstBuyItems,item)
-	log('Eklenti: Öğe Silindi [%s]' %item)
+	log('TR_AutoConsignment: İtem Kaldırıldı [%s]' %item)
 
 
 def LoadList(List):
@@ -132,7 +132,6 @@ def event_loop():
 				QtBind.clear(gui,ComboDegree)
 
 
-#page starts with 0.. so page 1 is 0 in the packet
 def RequestPage(Page):
 	if Page == 0:
 		p = b'\x01'
@@ -140,7 +139,6 @@ def RequestPage(Page):
 		p = b'\x03'
 	p += struct.pack('B',Page)
 
-	#search settings
 	CurrentClass = QtBind.text(gui, ComboClass)
 	CurrentType = QtBind.text(gui, ComboType)
 	CurrentDegree = QtBind.text(gui, ComboDegree)
@@ -154,29 +152,34 @@ def RequestPage(Page):
 
 
 def EnterConsignmentNPC():
-	global Pagethread
-	QtBind.clear(gui,lstItems)
-	npcs = get_npcs()
-	for key, npc in npcs.items():
-		if npc['servername'].startswith('NPC_OPEN_MARKET'):
-			log("Eklenti: NPC Girisi yapiliyor...")
-			p = struct.pack('<I', key)
-			inject_joymax(0x7045,p, False)
-			p += b'\x21'
-			inject_joymax(0x7046,p, False)
-			Pagethread = Timer(2.0, RequestPage(0))
-			Pagethread.start()
-			return
-	log('Eklenti: Konsiye NPCsi Yanında Değilsin!')
-			
+    global Pagethread
+    QtBind.clear(gui,lstItems)
+    npcs = get_npcs()
+    if npcs is None:
+        log('TR_AutoConsignment: NPC bilgileri alınamadı. Karakter oyunda olmayabilir veya NPC yakınında olmayabilir.')
+        return
+
+    for key, npc in npcs.items():
+        if npc['servername'].startswith('NPC_OPEN_MARKET'):
+            log("TR_AutoConsignment: NPC'ye Giriliyor")
+            p = struct.pack('<I', key)
+            inject_joymax(0x7045,p, False)
+            p += b'\x21'
+            inject_joymax(0x7046,p, False)
+            Pagethread = Timer(2.0, RequestPage, args=[0])
+            Pagethread.start()
+            return
+    log('TR_AutoConsignment: Takas NPC\'sinin yakınında değilsiniz')
+    global Started
+    if Started == 'Search':
+        Started = False
+
 def ExitNPC():
-	#exit trade window 
 	inject_joymax(0x7507,b'',False)
-	#exit npc window
 	npcs = get_npcs()
 	for key, npc in npcs.items():
 		if npc['servername'].startswith('NPC_OPEN_MARKET'):
-			log("Eklenti: NPC'den Cikis Yapılıyor...")
+			log("TR_AutoConsignment: NPC'den Çıkılıyor")
 			inject_joymax(0x704B, struct.pack('<I', key), False)
 
 def BuyItem(CharName,ListingID,ItemID):
@@ -202,14 +205,12 @@ def handle_joymax(opcode,data):
 			NumberOfPages = data[Index]
 			Index += 1
 			for i in range(NumberItemsOnPage):
-				#used to purchase i think
 				ListingID = struct.unpack_from('<I',data,Index)[0]
 				Index += 4
 				NameLength = struct.unpack_from('<H',data,Index)[0]
 				Index += 2
 				CharName = struct.unpack_from('<' + str(NameLength) + 's',data,Index)[0].decode('cp1252')
 				Index += NameLength + 1
-				#in the database
 				ItemID = struct.unpack_from('<I',data,Index)[0]
 				ItemName = get_item(ItemID)['name']
 				Index += 4
@@ -217,32 +218,28 @@ def handle_joymax(opcode,data):
 				Index += 4
 				Price = int.from_bytes(struct.unpack_from('<8s',data,Index)[0], "little")
 				Index += 8
-				#no idea what next 8 bytes are..skip them
 				Index += 8
 				ItemCount += 1
 				if ItemName in BuyItems and Price <= BuyMaxPrice and Quantity >= BuyQuantity:
-					log('Satın Alma: [%s] Adet [%s] [%s] &den [%s] Fiyatına Alındı.' %(Quantity,ItemName,CharName,Price))
+					log('Satın alınıyor [%s][%s] kişiden [%s] fiyata [%s]' %(ItemName,Quantity,CharName,Price))
 					BuyItem(CharName,ListingID,ItemID)
 					PageIndex = 0
 					ItemCount = 0
-					#start again in 10 seconds
 					NPCthread = Timer(20.0, EnterConsignmentNPC)
 					NPCthread.start()
 					return
 
-				itemdata = 'Satıcı:[%s] Adet: [%s] Fiyat: [%s] Esya :[%s]' %(CharName,Quantity,Price,ItemName)
+				itemdata = 'Satıcı: [%s] Miktar: [%s] Fiyat: [%s] İtem :[%s]' %(CharName,Quantity,Price,ItemName)
 				QtBind.append(gui,lstItems,itemdata)
-			#request next page
 			if PageIndex < NumberOfPages:
 				PageIndex += 1
 				Pagethread = Timer(0.1, RequestPage, [PageIndex])
 				Pagethread.start()
 			else:
-				log("Eklenti: Tüm Esyaların Kontrolü Tamamlandı.. Toplam Esyalar[%s]" %ItemCount)
+				log("TR_AutoConsignment: Tüm İtemler Kontrol Edildi.. Toplam İtem[%s]" %ItemCount)
 				PageIndex = 0
 				ItemCount = 0
 				Timer(1.0, ExitNPC, ()).start()
-				#start again in 20 seconds
 				if Started != 'Search':
 					NPCthread = Timer(20.0, EnterConsignmentNPC)
 					NPCthread.start()
@@ -382,7 +379,6 @@ ItemList = {
     ]
 }
 
-
 LoadList('All')
 
-log('Eklenti:%s v%s Yuklendi. // edit by hakankahya' % (name,version))
+log(f'Eklenti: {name} başarıyla yüklendi.')
