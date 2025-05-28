@@ -9,7 +9,7 @@ import urllib.request
 import os
 
 name = 'TR_AutoConsignment'
-
+version = 1.0
 path = get_config_dir()[:-7]
 
 gui = QtBind.init(__name__, name)
@@ -155,10 +155,6 @@ def EnterConsignmentNPC():
     global Pagethread
     QtBind.clear(gui,lstItems)
     npcs = get_npcs()
-    if npcs is None:
-        log('TR_AutoConsignment: NPC bilgileri alınamadı. Karakter oyunda olmayabilir veya NPC yakınında olmayabilir.')
-        return
-
     for key, npc in npcs.items():
         if npc['servername'].startswith('NPC_OPEN_MARKET'):
             log("TR_AutoConsignment: NPC'ye Giriliyor")
@@ -170,9 +166,6 @@ def EnterConsignmentNPC():
             Pagethread.start()
             return
     log('TR_AutoConsignment: Takas NPC\'sinin yakınında değilsiniz')
-    global Started
-    if Started == 'Search':
-        Started = False
 
 def ExitNPC():
 	inject_joymax(0x7507,b'',False)
