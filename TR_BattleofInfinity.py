@@ -233,7 +233,7 @@ def BeginBattle():
 	move_to(14675.0, 2592.0, 0.0)
 	npcs = get_npcs()
 	for key, npc in npcs.items():
-		if npc['name'] == r"Zindan Müdürü":
+		if npc['name'] == r"Dungeon Manager" or npc['name'] == r"Zindan Müdürü":
 			packet = struct.pack('<I', key)
 			inject_joymax(0x7045,packet,False)
 			Timer(2.0, inject_joymax, [0x7588, b'\x01', False]).start()
